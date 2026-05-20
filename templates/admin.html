@@ -41,6 +41,7 @@
                 <th>Phone</th>
                 <th>Email</th>
                 <th>Items</th>
+                <th>Delivery</th>
                 <th>Needed by</th>
             </tr>
         </thead>
@@ -80,6 +81,14 @@
                             {% endfor %}
                         </ul>
                     </details>
+                    {% else %}—{% endif %}
+                </td>
+                <td class="admin-delivery-cell">
+                    {% if o.delivery_address %}
+                    <div class="admin-address">{{ o.delivery_address }}</div>
+                    {% if o.receiver_phone %}
+                    <div class="admin-receiver">Receiver: {{ o.receiver_phone }}</div>
+                    {% endif %}
                     {% else %}—{% endif %}
                 </td>
                 <td>{{ o.needed_by or '—' }}</td>

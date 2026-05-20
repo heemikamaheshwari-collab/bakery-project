@@ -5,9 +5,12 @@ import re
 from datetime import datetime
 from functools import wraps
 from urllib.parse import quote
+from dotenv import load_dotenv
 from flask import Flask, render_template, request, redirect, url_for, Response
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import String, DateTime, Boolean, JSON
+
+load_dotenv(override=True)
 
 app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 32 * 1024 * 1024
@@ -43,6 +46,8 @@ class Order(db.Model):
     phone = db.Column(String(20), default="")
     email = db.Column(String(200), default="")
     needed_by = db.Column(String(20), default="")
+    delivery_address = db.Column(db.Text, default="")
+    receiver_phone = db.Column(String(20), default="")
     items = db.Column(JSON, nullable=False, default=list)
     delivered = db.Column(Boolean, nullable=False, default=False)
 
@@ -55,9 +60,33 @@ class Order(db.Model):
             "phone": self.phone or "",
             "email": self.email or "",
             "needed_by": self.needed_by or "",
+            "delivery_address": self.delivery_address or "",
+            "receiver_phone": self.receiver_phone or "",
             "items": self.items or [],
             "delivered": bool(self.delivered),
         }
+
+
+def _ensure_schema():
+    """Add new columns to existing orders table if missing (poor-man's migration).
+
+    Lets us add Order fields after the DB was first created without dropping data.
+    Works for both SQLite (local) and Postgres (production).
+    """
+    from sqlalchemy import inspect, text
+    inspector = inspect(db.engine)
+    if "orders" not in inspector.get_table_names():
+        return
+    existing = {c["name"] for c in inspector.get_columns("orders")}
+    new_cols = {
+        "delivery_address": "TEXT DEFAULT ''",
+        "receiver_phone": "VARCHAR(20) DEFAULT ''",
+    }
+    with db.engine.begin() as conn:
+        for col, ddl in new_cols.items():
+            if col not in existing:
+                conn.execute(text(f"ALTER TABLE orders ADD COLUMN {col} {ddl}"))
+                print(f"[db] Added column orders.{col}")
 
 
 def _legacy_items(order):
@@ -113,6 +142,7 @@ def _migrate_json_to_db():
 
 with app.app_context():
     db.create_all()
+    _ensure_schema()
     _migrate_json_to_db()
 
 
@@ -363,6 +393,8 @@ def save_order(order):
         phone=order.get("phone", ""),
         email=order.get("email", ""),
         needed_by=order.get("needed_by", ""),
+        delivery_address=order.get("delivery_address", ""),
+        receiver_phone=order.get("receiver_phone", ""),
         items=order.get("items", []),
         delivered=bool(order.get("delivered", False)),
     )
@@ -377,9 +409,10 @@ def build_whatsapp_link(order):
         f"Hello {BAKERY_NAME}! I would like to place an order:",
         f"Name: {order['name']}",
         f"Phone: {full_phone}",
-        "",
-        "Items:",
     ]
+    if order.get("receiver_phone"):
+        lines.append(f"Receiver's phone: {order['receiver_phone']}")
+    lines += ["", "Items:"]
     items = order.get("items") or _legacy_items(order)
     for i, it in enumerate(items, 1):
         qty = it.get("quantity", 1)
@@ -387,7 +420,11 @@ def build_whatsapp_link(order):
         if it.get("customization"):
             lines.append(f"     Note: {it['customization']}")
     lines.append("")
+    if order.get("delivery_address"):
+        lines.append(f"Delivery address: {order['delivery_address']}")
     lines.append(f"Needed by: {order.get('needed_by') or 'Not specified'}")
+    lines.append("")
+    lines.append("(Delivery charges will be confirmed on chat based on location.)")
     message = "\n".join(lines)
     return f"https://wa.me/{BAKER_WHATSAPP}?text={quote(message)}"
 
@@ -586,6 +623,7 @@ def order():
         items_raw = request.form.get("items_json", "[]")
         items = _parse_items_json(items_raw, order_id=order_id)
         phone_digits = "".join(c for c in request.form.get("phone", "") if c.isdigit())[:10]
+        receiver_digits = "".join(c for c in request.form.get("receiver_phone", "") if c.isdigit())[:10]
         order_data = {
             "id": order_id,
             "created_at": datetime.utcnow().isoformat(),
@@ -595,6 +633,8 @@ def order():
             "email": request.form.get("email", "").strip(),
             "items": items,
             "needed_by": request.form.get("needed_by", "").strip(),
+            "delivery_address": request.form.get("delivery_address", "").strip(),
+            "receiver_phone": receiver_digits,
             "delivered": False,
         }
         if not items:
@@ -603,6 +643,9 @@ def order():
         if not order_data["name"] or len(order_data["phone"]) != 10:
             return _render_order_form(preselected, {**order_data, "items_json": items_raw},
                 "Please enter your name and a valid 10-digit phone number.")
+        if not order_data["delivery_address"]:
+            return _render_order_form(preselected, {**order_data, "items_json": items_raw},
+                "Please enter a delivery address.")
         save_order(order_data)
         wa_link = build_whatsapp_link(order_data)
         return render_template(

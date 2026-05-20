@@ -987,6 +987,18 @@ main > section { padding: 6rem 1.5rem; max-width: var(--max-w); margin: 0 auto; 
 }
 .admin-item-meta { color: var(--muted); font-size: 0.85rem; }
 .admin-item-note { color: var(--muted); font-style: italic; font-size: 0.82rem; }
+.admin-delivery-cell { min-width: 220px; max-width: 280px; }
+.admin-address {
+    font-size: 0.9rem;
+    color: var(--ink);
+    white-space: pre-wrap;
+    line-height: 1.4;
+}
+.admin-receiver {
+    margin-top: 0.4rem;
+    font-size: 0.85rem;
+    color: var(--muted);
+}
 
 /* Thank-you items */
 .summary-items { list-style: none; padding: 0; margin: 0.75rem 0; display: flex; flex-direction: column; gap: 0.6rem; }

@@ -126,6 +126,26 @@
                 <small class="form-hint">Exactly 10 digits, no spaces or dashes.</small>
             </label>
 
+            <label>
+                Delivery address <span class="req">*</span>
+                <textarea name="delivery_address" rows="3"
+                    placeholder="House / flat no., area, landmark, pincode — within Jaipur only"
+                    required>{{ form.delivery_address or '' }}</textarea>
+                <small class="form-hint">
+                    Delivery only within Jaipur. <strong>Delivery charges apply based on distance</strong> and will be confirmed on WhatsApp before we bake.
+                </small>
+            </label>
+
+            <label>
+                Receiver's phone (optional)
+                <input type="tel" name="receiver_phone" id="receiver-phone-input"
+                    value="{{ form.receiver_phone or '' }}"
+                    inputmode="numeric"
+                    maxlength="10"
+                    placeholder="If different from yours — 10-digit number">
+                <small class="form-hint">Useful if the cake is a gift being delivered to someone else.</small>
+            </label>
+
             <div class="form-row">
                 <label>
                     Email (optional)
@@ -329,17 +349,29 @@
         if (current > 1) show(current - 1);
     }));
 
+    function digitsOnly(input) {
+        input.addEventListener('input', function() {
+            const cleaned = input.value.replace(/\D/g, '').slice(0, 10);
+            if (cleaned !== input.value) input.value = cleaned;
+        });
+    }
     const phone = document.getElementById('phone-input');
-    phone.addEventListener('input', function() {
-        const cleaned = phone.value.replace(/\D/g, '').slice(0, 10);
-        if (cleaned !== phone.value) phone.value = cleaned;
-    });
+    const receiverPhone = document.getElementById('receiver-phone-input');
+    digitsOnly(phone);
+    digitsOnly(receiverPhone);
 
     form.addEventListener('submit', function(e) {
         if (!items.length) { e.preventDefault(); alert('Please add at least one item.'); show(1); return; }
         const nameEl = form.querySelector('[name="name"]');
         if (!nameEl.value.trim()) { e.preventDefault(); alert('Please enter your name.'); return; }
         if (phone.value.length !== 10) { e.preventDefault(); alert('Please enter a 10-digit phone number.'); return; }
+        const addressEl = form.querySelector('[name="delivery_address"]');
+        if (!addressEl.value.trim()) { e.preventDefault(); alert('Please enter a delivery address.'); return; }
+        if (receiverPhone.value && receiverPhone.value.length !== 10) {
+            e.preventDefault();
+            alert("Receiver's phone must be exactly 10 digits, or leave it empty.");
+            return;
+        }
     });
 
     if (preselectedCake) {

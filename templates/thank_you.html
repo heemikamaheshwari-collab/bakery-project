@@ -34,6 +34,13 @@
         </ul>
         <p class="summary-meta"><strong>Needed by:</strong> {{ order.needed_by or 'Not specified' }}</p>
         <p class="summary-meta"><strong>Phone:</strong> {{ order.phone_code }} {{ order.phone }}</p>
+        {% if order.receiver_phone %}
+        <p class="summary-meta"><strong>Receiver's phone:</strong> {{ order.receiver_phone }}</p>
+        {% endif %}
+        <p class="summary-meta"><strong>Delivery address:</strong><br>{{ order.delivery_address or 'Not specified' }}</p>
+        <p class="summary-meta" style="color: var(--muted); font-size: 0.9rem; margin-top: 0.75rem;">
+            Delivery charges apply based on distance and will be confirmed on WhatsApp.
+        </p>
     </div>
 
     <a href="{{ url_for('home') }}" class="link">&larr; Back to home</a>
