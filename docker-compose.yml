@@ -1,0 +1,36 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bakery-app
+    ports:
+      - "5000:5000"
+    env_file: .env
+    volumes:
+      - ./app.py:/app/app.py
+      - ./templates:/app/templates
+      - ./static:/app/static
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/').read()"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+
+  # Production variant (uncomment to use)
+  # app-prod:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   container_name: bakery-app-prod
+  #   ports:
+  #     - "5000:5000"
+  #   environment:
+  #     BAKERY_NAME: ${BAKERY_NAME:-Sweet Crumbs Home Bakery}
+  #     BAKER_WHATSAPP: ${BAKER_WHATSAPP:-919999999999}
+  #     BAKER_EMAIL: ${BAKER_EMAIL:-baker@example.com}
+  #   volumes:
+  #     - ./orders.json:/app/orders.json:ro
+  #   restart: always

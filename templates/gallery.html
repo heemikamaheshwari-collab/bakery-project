@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Gallery &middot; {{ bakery_name }}{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <span class="eyebrow">A look at our bakes</span>
+    <h1>Gallery</h1>
+    <p>Tap any photo to see the full image. Browse our creations across cakes, cupcakes, cookies, and more.</p>
+</section>
+
+<div class="category-bar">
+    <a href="{{ url_for('gallery') }}" class="cat-pill {% if selected == 'all' %}active{% endif %}">All</a>
+    {% for cat in categories %}
+    <a href="{{ url_for('gallery', category=cat) }}" class="cat-pill {% if selected == cat %}active{% endif %}">{{ cat }}</a>
+    {% endfor %}
+</div>
+
+<section class="photo-grid">
+    {% for cake in cakes %}
+    <button type="button" class="photo-tile"
+            data-image="{{ url_for('static', filename='images/' + cake.image) }}"
+            data-name="{{ cake.name }}"
+            aria-label="View {{ cake.name }}">
+        <img src="{{ url_for('static', filename='images/' + cake.image) }}" alt="{{ cake.name }}" loading="lazy">
+        <span class="photo-tile-name">{{ cake.name }}</span>
+    </button>
+    {% endfor %}
+</section>
+
+<!-- Image-only lightbox -->
+<div id="photo-modal" class="modal" aria-hidden="true">
+    <div class="modal-backdrop" data-close-photo></div>
+    <div class="modal-content photo-modal-content" role="dialog" aria-modal="true">
+        <button type="button" class="modal-close" data-close-photo aria-label="Close">&times;</button>
+        <img id="photo-modal-image" src="" alt="">
+        <div class="photo-modal-caption" id="photo-modal-caption"></div>
+    </div>
+</div>
+
+<script>
+(function() {
+    const modal = document.getElementById('photo-modal');
+    const img = document.getElementById('photo-modal-image');
+    const caption = document.getElementById('photo-modal-caption');
+
+    function open(tile) {
+        img.src = tile.dataset.image;
+        img.alt = tile.dataset.name;
+        caption.textContent = tile.dataset.name;
+        modal.classList.add('open');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+    }
+    function close() {
+        modal.classList.remove('open');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+    }
+
+    document.querySelectorAll('.photo-tile').forEach(function(t) {
+        t.addEventListener('click', function() { open(t); });
+    });
+    modal.querySelectorAll('[data-close-photo]').forEach(function(el) {
+        el.addEventListener('click', close);
+    });
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && modal.classList.contains('open')) close();
+    });
+})();
+</script>
+{% endblock %}

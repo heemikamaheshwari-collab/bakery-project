@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Menu &middot; {{ bakery_name }}{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <span class="eyebrow">Our menu</span>
+    <h1>Order from our menu</h1>
+    <p>Everything is fully customizable — pick "Order" to make it yours.</p>
+</section>
+
+<div class="category-bar">
+    <a href="{{ url_for('menu') }}" class="cat-pill {% if selected == 'all' %}active{% endif %}">All</a>
+    {% for cat in categories %}
+    <a href="{{ url_for('menu', category=cat) }}" class="cat-pill {% if selected == cat %}active{% endif %}">{{ cat }}</a>
+    {% endfor %}
+</div>
+
+<section class="cake-grid wide">
+    {% for cake in cakes %}
+    <article class="cake-card" data-cake-name="{{ cake.name }}"
+             data-cake-image="{{ url_for('static', filename='images/' + cake.image) }}"
+             data-cake-description="{{ cake.description }}"
+             data-cake-price="{{ cake.price }}">
+        <div class="cake-image-wrap clickable">
+            <div class="cake-image" style="background-image:url('{{ url_for('static', filename='images/' + cake.image) }}');"></div>
+        </div>
+        <div class="cake-body">
+            <span class="cake-cat-tag">{{ cake.category }}</span>
+            <h3>{{ cake.name }}</h3>
+            <p>{{ cake.description }}</p>
+            <div class="cake-footer">
+                <span class="price"><span class="price-from">from</span> &#8377;{{ cake.price }}</span>
+                <a href="{{ url_for('order', cake=cake.name) }}" class="btn btn-small">Order</a>
+            </div>
+        </div>
+    </article>
+    {% endfor %}
+</section>
+
+{% include '_cake_modal.html' %}
+{% endblock %}

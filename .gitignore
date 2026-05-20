@@ -1,0 +1,19 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+orders.json
+.DS_Store
+
+# Local SQLite database (production uses Postgres via DATABASE_URL)
+data/bakery.db
+*.db
+
+# Customer-uploaded reference images (production uses Vercel Blob)
+static/uploads/*
+!static/uploads/.gitkeep
+
+# Vercel local dev artifacts
+.vercel
+

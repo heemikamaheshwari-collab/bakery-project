@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block title %}Admin &middot; {{ bakery_name }}{% endblock %}
+{% block whatsapp_fab %}{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <h1>Admin</h1>
+    <p>
+        Showing <strong>{{ orders|length }}</strong> of {{ counts.all }} order{{ '' if counts.all == 1 else 's' }}
+        ({{ counts.pending }} pending, {{ counts.delivered }} delivered).
+    </p>
+</section>
+
+<form method="GET" action="{{ url_for('admin_view') }}" class="filter-bar">
+    <label class="filter-group">
+        <span class="filter-label">Status</span>
+        <select name="status" onchange="this.form.submit()">
+            <option value="all"       {% if status == 'all' %}selected{% endif %}>All ({{ counts.all }})</option>
+            <option value="pending"   {% if status == 'pending' %}selected{% endif %}>Pending ({{ counts.pending }})</option>
+            <option value="delivered" {% if status == 'delivered' %}selected{% endif %}>Delivered ({{ counts.delivered }})</option>
+        </select>
+    </label>
+    <label class="filter-group">
+        <span class="filter-label">Sort</span>
+        <select name="sort" onchange="this.form.submit()">
+            <option value="newest" {% if sort == 'newest' %}selected{% endif %}>Newest first</option>
+            <option value="oldest" {% if sort == 'oldest' %}selected{% endif %}>Oldest first</option>
+        </select>
+    </label>
+    <noscript><button type="submit" class="btn btn-small">Apply</button></noscript>
+</form>
+
+{% if orders %}
+<section class="orders-wrap">
+    <table class="orders-table">
+        <thead>
+            <tr>
+                <th>Status</th>
+                <th>Placed</th>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>Items</th>
+                <th>Needed by</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for o in orders %}
+            <tr{% if o.delivered %} class="delivered"{% endif %}>
+                <td>
+                    <form method="POST" action="{{ url_for('toggle_delivered', order_id=o.id, status=status, sort=sort) }}" class="status-form">
+                        <label class="status-toggle">
+                            <input type="checkbox" {% if o.delivered %}checked{% endif %} onchange="this.form.submit()">
+                            <span class="status-label {% if o.delivered %}done{% else %}pending{% endif %}">
+                                {{ 'Delivered' if o.delivered else 'Pending' }}
+                            </span>
+                        </label>
+                    </form>
+                </td>
+                <td>{{ o.created_display }}</td>
+                <td>{{ o.name }}</td>
+                <td>{{ (o.phone_code ~ ' ' ~ o.phone) if o.phone_code else o.phone }}</td>
+                <td>{{ o.email or '—' }}</td>
+                <td class="admin-items-cell">
+                    {% if o['items'] %}
+                    <details>
+                        <summary>{{ o.item_count }} item{{ '' if o.item_count == 1 else 's' }}</summary>
+                        <ul class="admin-item-list">
+                            {% for it in o['items'] %}
+                            <li>
+                                <strong>{{ it.cake }}</strong> × {{ it.quantity }}<br>
+                                <span class="admin-item-meta">{{ (it.size ~ ' · ') if it.size else '' }}{{ it.flavor }}</span>
+                                {% if it.customization %}<br><span class="admin-item-note">Note: {{ it.customization }}</span>{% endif %}
+                                {% if it.image_filename %}<br>
+                                <a href="{{ it.image_filename | image_url }}" target="_blank" rel="noopener" class="admin-item-image">
+                                    <img src="{{ it.image_filename | image_url }}" alt="Reference">
+                                </a>
+                                {% endif %}
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </details>
+                    {% else %}—{% endif %}
+                </td>
+                <td>{{ o.needed_by or '—' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% else %}
+<p class="center" style="color: var(--muted);">
+    {% if status == 'pending' %}No pending orders.
+    {% elif status == 'delivered' %}No delivered orders yet.
+    {% else %}No orders yet.
+    {% endif %}
+</p>
+{% endif %}
+{% endblock %}

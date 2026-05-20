@@ -1,0 +1,355 @@
+{% extends "base.html" %}
+{% block title %}Place an Order &middot; {{ bakery_name }}{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <h1>Place Your Order</h1>
+    <p>Add as many items as you like, then share your details. We'll confirm on WhatsApp.</p>
+</section>
+
+<section class="order-section">
+    {% if error %}
+        <div class="alert">{{ error }}</div>
+    {% endif %}
+
+    <ol class="step-bar" aria-label="Order progress">
+        <li class="step-dot active" data-step="1"><span>1</span> Your items</li>
+        <li class="step-dot" data-step="2"><span>2</span> Contact</li>
+    </ol>
+
+    <form method="POST" action="{{ url_for('order') }}" class="order-form wizard" id="order-wizard" novalidate>
+        <input type="hidden" name="items_json" id="items-json" value='{{ form.items_json or "[]" }}'>
+
+        <!-- STEP 1: Cart + Add Item -->
+        <fieldset class="wizard-step active" data-step="1">
+            <legend>Step 1 — Build your order</legend>
+
+            <div class="cart-list" id="cart-list" aria-live="polite">
+                <p class="cart-empty">Your order is empty. Add an item below.</p>
+            </div>
+
+            <details class="add-item" id="add-item-panel" open>
+                <summary>+ Add an item</summary>
+                <div class="add-item-body">
+                    <label>
+                        Item <span class="req">*</span>
+                        <select id="ai-cake">
+                            <option value="">-- Choose --</option>
+                            {% for cat, items in grouped_cakes %}
+                            <optgroup label="{{ cat }}">
+                                {% for cake in items %}
+                                    <option value="{{ cake.name }}" data-price="{{ cake.price }}" data-category="{{ cake.category }}">{{ cake.name }} (&#8377;{{ cake.price }})</option>
+                                {% endfor %}
+                            </optgroup>
+                            {% endfor %}
+                            <option value="Custom / Something else" data-category="Other">Custom / Something else</option>
+                        </select>
+                    </label>
+
+                    <div class="form-row">
+                        <label id="ai-size-wrap">
+                            <span id="ai-size-label">Size / Servings <span class="req">*</span></span>
+                            <select id="ai-size">
+                                <option value="">-- Choose --</option>
+                            </select>
+                        </label>
+                        <label>
+                            Quantity <span class="req">*</span>
+                            <input type="number" id="ai-qty" value="1" min="1" max="50">
+                        </label>
+                    </div>
+
+                    <fieldset class="ai-flavor-wrap">
+                        <legend class="small-legend">Flavor <span class="req">*</span></legend>
+                        <div class="flavor-grid">
+                            {% for f in flavors %}
+                            <label class="flavor-option">
+                                <input type="radio" name="ai-flavor" value="{{ f }}">
+                                <span>{{ f }}</span>
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </fieldset>
+
+                    <label>
+                        Customization (optional)
+                        <textarea id="ai-customization" rows="3" placeholder="Theme, message on top, color preferences, allergies, eggless, etc."></textarea>
+                    </label>
+
+                    <label class="image-upload-label">
+                        Reference image (optional)
+                        <input type="file" id="ai-image" accept="image/jpeg,image/png,image/webp,image/jpg">
+                        <small class="form-hint">Share a design reference photo. Max 5 MB. JPG, PNG, or WEBP.</small>
+                        <div id="ai-image-preview" class="image-preview-wrap" hidden>
+                            <img id="ai-image-preview-img" src="" alt="Preview">
+                            <button type="button" class="image-clear-btn" id="ai-image-clear" aria-label="Remove image">&times;</button>
+                        </div>
+                    </label>
+
+                    <button type="button" class="btn btn-primary" id="add-item-btn">+ Add to order</button>
+                </div>
+            </details>
+
+            <div class="wizard-nav">
+                <span></span>
+                <button type="button" class="btn btn-primary" data-next>Next &rarr;</button>
+            </div>
+        </fieldset>
+
+        <!-- STEP 2: Contact -->
+        <fieldset class="wizard-step" data-step="2">
+            <legend>Step 2 — Your contact details</legend>
+
+            <label>
+                Your name <span class="req">*</span>
+                <input type="text" name="name" value="{{ form.name or '' }}" required>
+            </label>
+
+            <label>
+                Phone (WhatsApp) <span class="req">*</span>
+                <div class="phone-input">
+                    <select name="phone_code" class="phone-code">
+                        {% for c in country_codes %}
+                            <option value="{{ c.code }}"
+                                {% if form.phone_code == c.code or (not form.phone_code and c.code == '+91') %}selected{% endif %}>
+                                {{ c.code }} {{ c.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    <input type="tel" name="phone" id="phone-input"
+                        value="{{ form.phone or '' }}"
+                        inputmode="numeric"
+                        maxlength="10"
+                        placeholder="10-digit number"
+                        required>
+                </div>
+                <small class="form-hint">Exactly 10 digits, no spaces or dashes.</small>
+            </label>
+
+            <div class="form-row">
+                <label>
+                    Email (optional)
+                    <input type="email" name="email" value="{{ form.email or '' }}">
+                </label>
+                <label>
+                    Needed by
+                    <input type="date" name="needed_by" value="{{ form.needed_by or '' }}">
+                </label>
+            </div>
+
+            <div class="wizard-nav">
+                <button type="button" class="btn btn-secondary" data-back>&larr; Back</button>
+                <button type="submit" class="btn btn-primary btn-large">Submit Order</button>
+            </div>
+            <p class="form-note">After submitting, you'll get a WhatsApp link to send the order to us instantly.</p>
+        </fieldset>
+    </form>
+</section>
+
+<script>
+(function() {
+    const form = document.getElementById('order-wizard');
+    const steps = form.querySelectorAll('.wizard-step');
+    const dots = document.querySelectorAll('.step-bar .step-dot');
+    const itemsJsonInput = document.getElementById('items-json');
+    const cartList = document.getElementById('cart-list');
+    const addPanel = document.getElementById('add-item-panel');
+    const preselectedCake = "{{ preselected or '' }}";
+    let current = 1;
+    let items = [];
+
+    try { items = JSON.parse(itemsJsonInput.value) || []; } catch (e) { items = []; }
+
+    function escapeHtml(s) {
+        return String(s).replace(/[&<>"']/g, c => ({
+            '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'
+        }[c]));
+    }
+
+    function renderCart() {
+        if (!items.length) {
+            cartList.innerHTML = '<p class="cart-empty">Your order is empty. Add an item below.</p>';
+        } else {
+            cartList.innerHTML = items.map((it, i) => `
+                <div class="cart-item" data-i="${i}">
+                    ${it.image_data ? `<img class="cart-item-thumb" src="${it.image_data}" alt="Reference">` : ''}
+                    <div class="cart-item-main">
+                        <h4>${escapeHtml(it.cake)}</h4>
+                        <div class="cart-item-meta">
+                            ${it.size ? '<span>' + escapeHtml(it.size) + '</span> · ' : ''}
+                            <span>${escapeHtml(it.flavor)}</span>
+                            ${it.customization ? '<div class="cart-item-note">' + escapeHtml(it.customization) + '</div>' : ''}
+                        </div>
+                    </div>
+                    <div class="qty-stepper" role="group" aria-label="Quantity">
+                        <button type="button" class="qty-btn" data-act="dec" aria-label="Decrease">−</button>
+                        <span class="qty-val">${it.quantity}</span>
+                        <button type="button" class="qty-btn" data-act="inc" aria-label="Increase">+</button>
+                    </div>
+                    <button type="button" class="cart-remove" data-act="rm" aria-label="Remove">&times;</button>
+                </div>
+            `).join('');
+        }
+        itemsJsonInput.value = JSON.stringify(items);
+    }
+
+    cartList.addEventListener('click', function(e) {
+        const btn = e.target.closest('button[data-act]');
+        if (!btn) return;
+        const row = btn.closest('.cart-item');
+        const i = parseInt(row.dataset.i);
+        if (btn.dataset.act === 'inc') items[i].quantity = Math.min(50, items[i].quantity + 1);
+        else if (btn.dataset.act === 'dec') {
+            items[i].quantity -= 1;
+            if (items[i].quantity < 1) items.splice(i, 1);
+        }
+        else if (btn.dataset.act === 'rm') items.splice(i, 1);
+        renderCart();
+    });
+
+    const SIZE_REQUIRED_CATEGORIES = ['Cakes', 'Cheesecakes'];
+    const SIZES_BY_CATEGORY = {{ sizes_by_category_json|safe }};
+    const cakeSelect = document.getElementById('ai-cake');
+    const sizeWrap = document.getElementById('ai-size-wrap');
+    const sizeLabelEl = document.getElementById('ai-size-label');
+    const sizeSelect = document.getElementById('ai-size');
+
+    function selectedCategory() {
+        const opt = cakeSelect.options[cakeSelect.selectedIndex];
+        return opt ? (opt.dataset.category || '') : '';
+    }
+    function rebuildSize() {
+        const cat = selectedCategory();
+        const opts = SIZES_BY_CATEGORY[cat] || [];
+        const required = SIZE_REQUIRED_CATEGORIES.includes(cat);
+
+        if (opts.length === 0) {
+            sizeWrap.style.display = 'none';
+            sizeSelect.innerHTML = '';
+            return;
+        }
+        sizeWrap.style.display = '';
+        sizeLabelEl.innerHTML = required
+            ? 'Size / Servings <span class="req">*</span>'
+            : 'Size <span class="form-hint">(optional)</span>';
+
+        sizeSelect.innerHTML =
+            (required ? '<option value="">-- Choose --</option>' : '') +
+            opts.map(s => `<option value="${s.value}">${s.label}</option>`).join('');
+
+        // For non-required categories, default-select the first option so users
+        // don't have to interact unless they want a bigger box.
+        if (!required && opts.length) sizeSelect.value = opts[0].value;
+    }
+    cakeSelect.addEventListener('change', rebuildSize);
+    rebuildSize();
+
+    const imgInput = document.getElementById('ai-image');
+    const imgPreview = document.getElementById('ai-image-preview');
+    const imgPreviewImg = document.getElementById('ai-image-preview-img');
+    let pendingImageDataUrl = null;
+
+    function clearPendingImage() {
+        pendingImageDataUrl = null;
+        imgInput.value = '';
+        imgPreview.hidden = true;
+        imgPreviewImg.src = '';
+    }
+    document.getElementById('ai-image-clear').addEventListener('click', clearPendingImage);
+
+    imgInput.addEventListener('change', function() {
+        const file = imgInput.files[0];
+        if (!file) { clearPendingImage(); return; }
+        if (file.size > 5 * 1024 * 1024) {
+            alert('Image is too large. Please pick a file under 5 MB.');
+            clearPendingImage();
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = function() {
+            pendingImageDataUrl = reader.result;
+            imgPreviewImg.src = reader.result;
+            imgPreview.hidden = false;
+        };
+        reader.onerror = function() {
+            alert('Could not read that image.');
+            clearPendingImage();
+        };
+        reader.readAsDataURL(file);
+    });
+
+    document.getElementById('add-item-btn').addEventListener('click', function() {
+        const cake = cakeSelect.value.trim();
+        const size = document.getElementById('ai-size').value.trim();
+        const qty = parseInt(document.getElementById('ai-qty').value) || 1;
+        const flavor = (document.querySelector('input[name="ai-flavor"]:checked') || {}).value || '';
+        const customization = document.getElementById('ai-customization').value.trim();
+        const category = selectedCategory();
+        const sizeRequired = SIZE_REQUIRED_CATEGORIES.includes(category);
+
+        if (!cake) { alert('Please choose an item.'); return; }
+        if (sizeRequired && !size) { alert('Please choose a size for this cake.'); return; }
+        if (!flavor) { alert('Please pick a flavor.'); return; }
+
+        items.push({
+            cake, size, flavor,
+            quantity: Math.max(1, Math.min(50, qty)),
+            customization,
+            image_data: pendingImageDataUrl || ''
+        });
+        renderCart();
+
+        document.getElementById('ai-cake').value = '';
+        document.getElementById('ai-size').value = '';
+        document.getElementById('ai-qty').value = '1';
+        document.querySelectorAll('input[name="ai-flavor"]').forEach(r => r.checked = false);
+        document.getElementById('ai-customization').value = '';
+        clearPendingImage();
+        rebuildSize();
+        addPanel.open = false;
+        setTimeout(() => addPanel.open = true, 50);
+    });
+
+    function show(step) {
+        steps.forEach(s => s.classList.toggle('active', parseInt(s.dataset.step) === step));
+        dots.forEach(d => {
+            const n = parseInt(d.dataset.step);
+            d.classList.toggle('active', n === step);
+            d.classList.toggle('done', n < step);
+        });
+        current = step;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    form.querySelectorAll('[data-next]').forEach(btn => btn.addEventListener('click', function() {
+        if (!items.length) { alert('Please add at least one item to your order.'); return; }
+        show(current + 1);
+    }));
+    form.querySelectorAll('[data-back]').forEach(btn => btn.addEventListener('click', function() {
+        if (current > 1) show(current - 1);
+    }));
+
+    const phone = document.getElementById('phone-input');
+    phone.addEventListener('input', function() {
+        const cleaned = phone.value.replace(/\D/g, '').slice(0, 10);
+        if (cleaned !== phone.value) phone.value = cleaned;
+    });
+
+    form.addEventListener('submit', function(e) {
+        if (!items.length) { e.preventDefault(); alert('Please add at least one item.'); show(1); return; }
+        const nameEl = form.querySelector('[name="name"]');
+        if (!nameEl.value.trim()) { e.preventDefault(); alert('Please enter your name.'); return; }
+        if (phone.value.length !== 10) { e.preventDefault(); alert('Please enter a 10-digit phone number.'); return; }
+    });
+
+    if (preselectedCake) {
+        const sel = document.getElementById('ai-cake');
+        for (const o of sel.options) if (o.value === preselectedCake) { o.selected = true; break; }
+    }
+
+    renderCart();
+
+    {% if error %} show(2); {% endif %}
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Thank You &middot; {{ bakery_name }}{% endblock %}
+
+{% block content %}
+<section class="thank-you">
+    <h1>Thank you, {{ order.name }}!</h1>
+    <p class="big">Your order has been saved. One last step:</p>
+
+    <a href="{{ wa_link }}" target="_blank" rel="noopener" class="btn btn-primary btn-large btn-wa">
+        Send order on WhatsApp
+    </a>
+
+    <p class="muted">Or email us directly: <a href="mailto:{{ baker_email }}">{{ baker_email }}</a></p>
+
+    <div class="order-summary">
+        <h3>Your order summary</h3>
+        <p class="summary-meta"><strong>Order ID:</strong> {{ order.id }}</p>
+        <ul class="summary-items">
+            {% for it in order['items'] %}
+            <li>
+                <div class="summary-item-head">
+                    <strong>{{ it.cake }}</strong>
+                    <span class="summary-qty">× {{ it.quantity }}</span>
+                </div>
+                <div class="summary-item-meta">{{ (it.size ~ ' · ') if it.size else '' }}{{ it.flavor }}</div>
+                {% if it.customization %}<div class="summary-item-note">Note: {{ it.customization }}</div>{% endif %}
+                {% if it.image_filename %}
+                <a href="{{ it.image_filename | image_url }}" target="_blank" rel="noopener" class="summary-item-image">
+                    <img src="{{ it.image_filename | image_url }}" alt="Reference image">
+                </a>
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+        <p class="summary-meta"><strong>Needed by:</strong> {{ order.needed_by or 'Not specified' }}</p>
+        <p class="summary-meta"><strong>Phone:</strong> {{ order.phone_code }} {{ order.phone }}</p>
+    </div>
+
+    <a href="{{ url_for('home') }}" class="link">&larr; Back to home</a>
+</section>
+{% endblock %}

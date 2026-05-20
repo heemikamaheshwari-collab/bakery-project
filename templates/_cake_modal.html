@@ -1,0 +1,55 @@
+<div id="cake-modal" class="modal" aria-hidden="true">
+    <div class="modal-backdrop" data-close-modal></div>
+    <div class="modal-content" role="dialog" aria-modal="true">
+        <button type="button" class="modal-close" data-close-modal aria-label="Close">&times;</button>
+        <img id="modal-image" src="" alt="">
+        <div class="modal-body">
+            <h3 id="modal-title"></h3>
+            <p id="modal-description"></p>
+            <div class="modal-footer">
+                <span class="price" id="modal-price"></span>
+                <a id="modal-order" href="#" class="btn btn-primary">Place Order</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+(function() {
+    const modal = document.getElementById('cake-modal');
+    if (!modal) return;
+    const img = document.getElementById('modal-image');
+    const title = document.getElementById('modal-title');
+    const desc = document.getElementById('modal-description');
+    const price = document.getElementById('modal-price');
+    const orderBtn = document.getElementById('modal-order');
+    const orderBase = "{{ url_for('order') }}";
+
+    function openModal(card) {
+        img.src = card.dataset.cakeImage;
+        img.alt = card.dataset.cakeName;
+        title.textContent = card.dataset.cakeName;
+        desc.textContent = card.dataset.cakeDescription;
+        price.textContent = '₹' + card.dataset.cakePrice;
+        orderBtn.href = orderBase + '?cake=' + encodeURIComponent(card.dataset.cakeName);
+        modal.classList.add('open');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeModal() {
+        modal.classList.remove('open');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+    }
+
+    document.querySelectorAll('.cake-card .cake-image-wrap.clickable, .cake-card .cake-image.clickable').forEach(function(el) {
+        el.addEventListener('click', function() { openModal(el.closest('.cake-card')); });
+    });
+    modal.querySelectorAll('[data-close-modal]').forEach(function(el) {
+        el.addEventListener('click', closeModal);
+    });
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && modal.classList.contains('open')) closeModal();
+    });
+})();
+</script>

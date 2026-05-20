@@ -1,0 +1,200 @@
+[
+  {
+    "id": 1,
+    "category": "Cakes",
+    "name": "Classic Chocolate Truffle",
+    "price": 650,
+    "image": "cake1.jpeg",
+    "description": "Rich Belgian chocolate with silky ganache."
+  },
+  {
+    "id": 2,
+    "category": "Cakes",
+    "name": "Red Velvet Dream",
+    "price": 750,
+    "image": "cake2.jpeg",
+    "description": "Soft red velvet layered with cream cheese frosting."
+  },
+  {
+    "id": 3,
+    "category": "Cakes",
+    "name": "Vanilla Berry Bliss",
+    "price": 700,
+    "image": "cake3.jpeg",
+    "description": "Fluffy vanilla sponge with fresh seasonal berries."
+  },
+  {
+    "id": 4,
+    "category": "Cakes",
+    "name": "Pineapple Delight",
+    "price": 600,
+    "image": "cake4.jpeg",
+    "description": "Classic pineapple sponge with whipped cream."
+  },
+  {
+    "id": 5,
+    "category": "Cakes",
+    "name": "Black Forest",
+    "price": 750,
+    "image": "cake5.jpeg",
+    "description": "Dark chocolate, cherries, and whipped cream."
+  },
+  {
+    "id": 6,
+    "category": "Cakes",
+    "name": "Custom Theme Cake",
+    "price": 1200,
+    "image": "cake6.jpeg",
+    "description": "Designed around your theme — birthdays, weddings, anniversaries."
+  },
+
+  {
+    "id": 7,
+    "category": "Cupcakes",
+    "name": "Chocolate Cupcakes",
+    "price": 250,
+    "image": "cupcake1.jpeg",
+    "description": "Moist chocolate sponge topped with silky chocolate buttercream. Box of 6."
+  },
+  {
+    "id": 8,
+    "category": "Cupcakes",
+    "name": "Vanilla Cupcakes",
+    "price": 250,
+    "image": "cupcake2.jpeg",
+    "description": "Classic vanilla cupcakes with vanilla bean buttercream and sprinkles. Box of 6."
+  },
+  {
+    "id": 9,
+    "category": "Cupcakes",
+    "name": "Red Velvet Cupcakes",
+    "price": 280,
+    "image": "cupcake3.jpeg",
+    "description": "Red velvet sponge with tangy cream cheese frosting. Box of 6."
+  },
+
+  {
+    "id": 10,
+    "category": "Cookies",
+    "name": "Chocolate Chip Cookies",
+    "price": 350,
+    "image": "cookie1.jpeg",
+    "description": "Classic chewy cookies loaded with chocolate chips. Box of 6."
+  },
+  {
+    "id": 11,
+    "category": "Cookies",
+    "name": "Double Chocolate Cookies",
+    "price": 400,
+    "image": "cookie2.jpeg",
+    "description": "Rich cocoa cookies with melty chocolate chunks. Box of 6."
+  },
+  {
+    "id": 12,
+    "category": "Cookies",
+    "name": "Oatmeal Raisin Cookies",
+    "price": 350,
+    "image": "cookie3.jpeg",
+    "description": "Wholesome oats and plump raisins, perfectly spiced. Box of 6."
+  },
+
+  {
+    "id": 20,
+    "category": "Brownies",
+    "name": "Classic Fudge Brownies",
+    "price": 450,
+    "image": "brownie1.jpeg",
+    "description": "Dense, fudgy, dark chocolate brownies. Box of 6."
+  },
+  {
+    "id": 21,
+    "category": "Brownies",
+    "name": "Walnut Brownies",
+    "price": 500,
+    "image": "brownie2.jpeg",
+    "description": "Our classic brownie with toasted walnuts. Box of 6."
+  },
+  {
+    "id": 22,
+    "category": "Brownies",
+    "name": "Triple Chocolate Brownies",
+    "price": 550,
+    "image": "brownie3.jpeg",
+    "description": "Dark, milk, and white chocolate in one bite. Box of 6."
+  },
+
+  {
+    "id": 30,
+    "category": "Cheesecakes",
+    "name": "Classic New York Cheesecake",
+    "price": 850,
+    "image": "cheesecake1.jpeg",
+    "description": "Rich, creamy, baked-style cheesecake on a buttery biscuit base."
+  },
+  {
+    "id": 31,
+    "category": "Cheesecakes",
+    "name": "Blueberry Cheesecake",
+    "price": 950,
+    "image": "cheesecake2.jpeg",
+    "description": "Vanilla cheesecake topped with a sweet-tart blueberry compote."
+  },
+  {
+    "id": 32,
+    "category": "Cheesecakes",
+    "name": "Chocolate Cheesecake",
+    "price": 950,
+    "image": "cheesecake3.jpeg",
+    "description": "Decadent dark chocolate cheesecake on an Oreo crust."
+  },
+
+  {
+    "id": 40,
+    "category": "Jar Cakes",
+    "name": "Chocolate Jar Cake",
+    "price": 200,
+    "image": "jarcake1.jpeg",
+    "description": "Layered chocolate cake & ganache in a cute mason jar."
+  },
+  {
+    "id": 41,
+    "category": "Jar Cakes",
+    "name": "Red Velvet Jar Cake",
+    "price": 220,
+    "image": "jarcake2.jpeg",
+    "description": "Red velvet & cream cheese, perfect single-serve treat."
+  },
+  {
+    "id": 42,
+    "category": "Jar Cakes",
+    "name": "Mango Jar Cake",
+    "price": 200,
+    "image": "jarcake3.jpeg",
+    "description": "Vanilla sponge with fresh mango and whipped cream. Seasonal."
+  },
+
+  {
+    "id": 50,
+    "category": "Gift Hampers",
+    "name": "Birthday Hamper",
+    "price": 1200,
+    "image": "hamper1.jpeg",
+    "description": "Mini cake + 6 cookies + 2 jar cakes. Wrapped & ready to gift."
+  },
+  {
+    "id": 51,
+    "category": "Gift Hampers",
+    "name": "Anniversary Hamper",
+    "price": 1500,
+    "image": "hamper2.jpeg",
+    "description": "Heart cheesecake + chocolate brownies + a handwritten card."
+  },
+  {
+    "id": 52,
+    "category": "Gift Hampers",
+    "name": "Festive Hamper",
+    "price": 1800,
+    "image": "hamper3.jpeg",
+    "description": "Curated selection of sweets — perfect for Diwali, Holi, Eid."
+  }
+]

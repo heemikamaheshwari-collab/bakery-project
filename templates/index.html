@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-inner">
+        <div class="hero-text">
+            <span class="eyebrow">★ Handcrafted in Jaipur</span>
+            <h1>Cakes baked with love,<br>and <em>so much more</em>.</h1>
+            <p class="lead">Custom cakes, cookies, brownies, cheesecakes, jar cakes, and gift hampers — freshly baked, made just for you.</p>
+            <div class="hero-buttons">
+                <a href="{{ url_for('order') }}" class="btn btn-primary btn-large">Order Now</a>
+                <a href="{{ url_for('menu') }}" class="btn btn-secondary btn-large">Browse Cakes</a>
+            </div>
+            <ul class="hero-badges">
+                <li><span>★</span> Fresh-baked daily</li>
+                <li><span>🌱</span> Eggless options</li>
+                <li><span>🚲</span> Delivery in Jaipur</li>
+            </ul>
+        </div>
+        <div class="hero-visual">
+            <div class="hero-image-frame">
+                <img src="{{ url_for('static', filename='images/cake1.jpeg') }}" alt="Classic Chocolate Truffle">
+            </div>
+            <div class="hero-blob"></div>
+        </div>
+    </div>
+</section>
+
+<section class="menu-grid-section">
+    <div class="center-head">
+        <span class="eyebrow">Our menu</span>
+        <h2>Browse by category</h2>
+    </div>
+    <p class="section-sub">We bake more than just cakes — explore the full menu below.</p>
+    <div class="menu-tiles">
+        {% for cat in categories %}
+        <a href="{{ url_for('menu', category=cat) }}" class="menu-tile" style="background-image:url('{{ url_for('static', filename='images/' + category_images[cat]) }}');">
+            <span class="menu-tile-overlay"></span>
+            <span class="menu-tile-content">
+                <span class="menu-tile-name">{{ cat }}</span>
+                <span class="menu-tile-arrow">View &rarr;</span>
+            </span>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="why-us">
+    <div class="center-head">
+        <span class="eyebrow">Our promise</span>
+        <h2>Why {{ bakery_name }}?</h2>
+    </div>
+    <p class="section-sub">A small home bakery that puts your celebration first.</p>
+    <div class="why-grid">
+        <div class="why-item">
+            <svg class="why-doodle" viewBox="0 0 48 48" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <!-- Paint splatters -->
+                <circle cx="9" cy="14" r="2.6" fill="#f5b73c"/>
+                <circle cx="6" cy="26" r="1.8" fill="#7eb6c4"/>
+                <circle cx="14" cy="33" r="2.2" fill="#d9709a"/>
+                <circle cx="4" cy="38" r="1.4" fill="#a3c97f"/>
+                <!-- Brush handle -->
+                <rect x="26" y="6" width="6" height="20" rx="2" fill="#a87a4f" stroke="#5d3f23" stroke-width="1.2"/>
+                <!-- Ferrule -->
+                <rect x="25" y="24" width="8" height="4" rx="1" fill="#d4b07a" stroke="#5d3f23" stroke-width="1.2"/>
+                <!-- Brush tip with paint -->
+                <path d="M25 28 Q21 36 22 42 Q26 38 30 42 Q34 38 36 42 Q37 36 33 28 Z" fill="#8a4a55" stroke="#5d2f38" stroke-width="1.2"/>
+            </svg>
+            <span class="why-num">01</span>
+            <h3>Fully customizable</h3>
+            <p>Any theme, message, color — your imagination, our craft.</p>
+        </div>
+        <div class="why-item">
+            <svg class="why-doodle" viewBox="0 0 48 48" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <!-- Top leaf -->
+                <path d="M24 22 Q22 12 24 6 Q26 12 24 22 Z" fill="#7eb84a" stroke="#3d6a2a" stroke-width="1.2"/>
+                <!-- Left leaf -->
+                <path d="M24 24 Q14 22 12 14 Q21 14 24 22 Z" fill="#9bcc5a" stroke="#3d6a2a" stroke-width="1.2"/>
+                <!-- Right leaf -->
+                <path d="M24 22 Q34 18 36 10 Q27 12 24 22 Z" fill="#7eb84a" stroke="#3d6a2a" stroke-width="1.2"/>
+                <!-- Stem -->
+                <path d="M24 22 L24 34" stroke="#3d6a2a" stroke-width="1.8"/>
+                <!-- Pot -->
+                <path d="M14 34 L34 34 L31 44 L17 44 Z" fill="#c98758" stroke="#7a4a1f" stroke-width="1.2"/>
+                <!-- Soil -->
+                <ellipse cx="24" cy="34" rx="10" ry="1.6" fill="#5a3a20"/>
+            </svg>
+            <span class="why-num">02</span>
+            <h3>100% eggless</h3>
+            <p>Every cake on the menu is made eggless, no extra charge.</p>
+        </div>
+        <div class="why-item">
+            <svg class="why-doodle" viewBox="0 0 48 48" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <!-- Steam -->
+                <path d="M16 8 Q18 4 16 2 M22 8 Q24 4 22 2 M28 8 Q30 4 28 2 M34 8 Q36 4 34 2" stroke="#b8b0a8" stroke-width="1.4" fill="none" opacity="0.75"/>
+                <!-- Oven body -->
+                <rect x="8" y="12" width="32" height="32" rx="3" fill="#ede1cf" stroke="#7a665b" stroke-width="1.4"/>
+                <!-- Top control panel -->
+                <rect x="10" y="14" width="28" height="6" rx="1" fill="#d6c3a6" stroke="#7a665b" stroke-width="1.2"/>
+                <!-- Knobs -->
+                <circle cx="14" cy="17" r="1.3" fill="#7a665b"/>
+                <circle cx="34" cy="17" r="1.3" fill="#7a665b"/>
+                <!-- Oven window (warm glow) -->
+                <rect x="12" y="24" width="24" height="16" rx="2" fill="#f5b95a" stroke="#7a665b" stroke-width="1.4"/>
+                <!-- Cake inside (layers) -->
+                <rect x="18" y="29" width="12" height="3" fill="#c97a4a"/>
+                <rect x="18" y="32" width="12" height="3" fill="#f3d3b0"/>
+                <rect x="18" y="35" width="12" height="3" fill="#c97a4a"/>
+                <!-- Cherry -->
+                <circle cx="24" cy="28" r="1.3" fill="#c2185b"/>
+                <path d="M24 27 L25 25" stroke="#3d6a2a" stroke-width="1"/>
+            </svg>
+            <span class="why-num">03</span>
+            <h3>Freshly baked</h3>
+            <p>Real cream, real chocolate, baked the morning of your order.</p>
+        </div>
+        <div class="why-item">
+            <svg class="why-doodle" viewBox="0 0 48 48" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <!-- Chat bubble -->
+                <path d="M8 23 C8 13 15 7 24 7 S40 13 40 23 33 39 24 39 c-2 0-4-0.3-6-0.8L10 41l2.5-7.2C9.7 31 8 27.3 8 23z" fill="#25d366" stroke="#1da851" stroke-width="1.4"/>
+                <!-- Text lines (white) -->
+                <path d="M16 20h16M16 26h11" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+                <!-- Little heart -->
+                <path d="M38 10 c-1.5-1.5-4-0.5-4 1.5 0 1.8 4 4 4 4 s4-2.2 4-4 c0-2-2.5-3-4-1.5z" fill="#f5a623" stroke="#b87a16" stroke-width="1"/>
+            </svg>
+            <span class="why-num">04</span>
+            <h3>WhatsApp first</h3>
+            <p>Order in two minutes. We confirm everything on chat.</p>
+        </div>
+    </div>
+</section>
+
+<section class="featured">
+    <div class="section-head">
+        <h2>Featured Cakes</h2>
+        <a href="{{ url_for('menu') }}" class="link">See all &rarr;</a>
+    </div>
+    <div class="cake-grid">
+        {% for cake in featured %}
+        <article class="cake-card" data-cake-name="{{ cake.name }}"
+                 data-cake-image="{{ url_for('static', filename='images/' + cake.image) }}"
+                 data-cake-description="{{ cake.description }}"
+                 data-cake-price="{{ cake.price }}">
+            <div class="cake-image-wrap clickable">
+                <div class="cake-image" style="background-image:url('{{ url_for('static', filename='images/' + cake.image) }}');"></div>
+            </div>
+            <div class="cake-body">
+                <h3>{{ cake.name }}</h3>
+                <p>{{ cake.description }}</p>
+                <div class="cake-footer">
+                    <span class="price"><span class="price-from">from</span> &#8377;{{ cake.price }}</span>
+                    <a href="{{ url_for('order', cake=cake.name) }}" class="btn btn-small">Order</a>
+                </div>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="testimonials">
+    <div class="center-head">
+        <span class="eyebrow">Praise</span>
+        <h2>What our customers say</h2>
+    </div>
+    <div class="testimonial-grid">
+        <figure class="testimonial">
+            <div class="stars">★★★★★</div>
+            <blockquote>The red velvet was magical — moist, perfectly sweet, and the design was exactly what I asked for.</blockquote>
+            <figcaption>Heemika M., Jaipur</figcaption>
+        </figure>
+        <figure class="testimonial">
+            <div class="stars">★★★★★</div>
+            <blockquote>Got a custom unicorn cake for my daughter's birthday. Everyone loved it. So easy over WhatsApp.</blockquote>
+            <figcaption>Priya S., Jaipur</figcaption>
+        </figure>
+        <figure class="testimonial">
+            <div class="stars">★★★★★</div>
+            <blockquote>Best black forest in Jaipur. Period. Tasted like the bakeries from my childhood.</blockquote>
+            <figcaption>Aman K., Jaipur</figcaption>
+        </figure>
+    </div>
+</section>
+
+<section class="how-it-works">
+    <h2>How it works</h2>
+    <div class="steps">
+        <div class="step"><span class="step-num">1</span><h4>Pick a cake</h4><p>Browse the gallery, tap any cake to see the full picture.</p></div>
+        <div class="step"><span class="step-num">2</span><h4>Customize it</h4><p>Choose size, flavor, theme, message — make it yours.</p></div>
+        <div class="step"><span class="step-num">3</span><h4>Confirm on WhatsApp</h4><p>We message you to confirm price, pickup time, and address.</p></div>
+    </div>
+</section>
+
+<section class="cta-banner">
+    <h2>Ready to order something sweet?</h2>
+    <p>Cakes, cookies, brownies, jar cakes, or a gift hamper — we'll bake it fresh, just for you.</p>
+    <a href="{{ url_for('order') }}" class="btn btn-primary btn-large">Place an Order</a>
+</section>
+
+{% include '_cake_modal.html' %}
+{% endblock %}
