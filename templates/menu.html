@@ -17,20 +17,30 @@
 
 <section class="cake-grid wide">
     {% for cake in cakes %}
-    <article class="cake-card" data-cake-name="{{ cake.name }}"
+    <article class="cake-card {% if cake.custom %}cake-card-custom{% endif %}"
+             data-cake-name="{{ cake.name }}"
              data-cake-image="{{ url_for('static', filename='images/' + cake.image) }}"
              data-cake-description="{{ cake.description }}"
-             data-cake-price="{{ cake.price }}">
+             data-cake-price="{{ cake.price }}"
+             data-cake-custom="{{ 'true' if cake.custom else 'false' }}">
         <div class="cake-image-wrap clickable">
             <div class="cake-image" style="background-image:url('{{ url_for('static', filename='images/' + cake.image) }}');"></div>
+            {% if cake.custom %}<span class="custom-badge">Custom</span>{% endif %}
         </div>
         <div class="cake-body">
             <span class="cake-cat-tag">{{ cake.category }}</span>
             <h3>{{ cake.name }}</h3>
             <p>{{ cake.description }}</p>
             <div class="cake-footer">
+                {% if cake.custom %}
+                <span class="price price-custom">Price on Request</span>
+                <button type="button" class="btn btn-small btn-inquire" data-inquire-cake="{{ cake.name }}">
+                    Inquire
+                </button>
+                {% else %}
                 <span class="price"><span class="price-from">from</span> &#8377;{{ cake.price }}</span>
                 <a href="{{ url_for('order', cake=cake.name) }}" class="btn btn-small">Order</a>
+                {% endif %}
             </div>
         </div>
     </article>
@@ -38,4 +48,5 @@
 </section>
 
 {% include '_cake_modal.html' %}
+{% include '_inquiry_modal.html' %}
 {% endblock %}

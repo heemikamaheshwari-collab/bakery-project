@@ -53,6 +53,28 @@
     {% endblock %}
 
     <script>
+    // Scroll-reveal: fade + slide-up sections as they enter the viewport.
+    // Respects prefers-reduced-motion.
+    (function() {
+        const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const targets = document.querySelectorAll('main > section, .cake-card, .why-item, .menu-tile, .testimonial, .step');
+        targets.forEach(el => el.classList.add('reveal'));
+
+        if (reduce || !('IntersectionObserver' in window)) {
+            targets.forEach(el => el.classList.add('in-view'));
+            return;
+        }
+        const io = new IntersectionObserver(function(entries) {
+            entries.forEach(function(e) {
+                if (e.isIntersecting) {
+                    e.target.classList.add('in-view');
+                    io.unobserve(e.target);
+                }
+            });
+        }, { threshold: 0.08, rootMargin: '0px 0px -50px 0px' });
+        targets.forEach(el => io.observe(el));
+    })();
+
     (function() {
         const toggle = document.getElementById('nav-toggle');
         const nav = document.getElementById('primary-nav');

@@ -40,12 +40,49 @@
     "description": "Dark chocolate, cherries, and whipped cream."
   },
   {
-    "id": 6,
-    "category": "Cakes",
-    "name": "Custom Theme Cake",
-    "price": 1200,
-    "image": "cake6.jpeg",
-    "description": "Designed around your theme — birthdays, weddings, anniversaries."
+    "id": 60,
+    "category": "Custom Cakes",
+    "name": "Wedding Cakes",
+    "price": 0,
+    "image": "custom-wedding.jpeg",
+    "description": "Multi-tier elegance for your big day. Choose your flavor, frosting style, and floral or fondant detailing.",
+    "custom": true
+  },
+  {
+    "id": 61,
+    "category": "Custom Cakes",
+    "name": "Birthday Theme Cakes",
+    "price": 0,
+    "image": "custom-birthday.jpeg",
+    "description": "Unicorns, princesses, cars, superheroes, sports — any theme your little one (or big one) loves.",
+    "custom": true
+  },
+  {
+    "id": 62,
+    "category": "Custom Cakes",
+    "name": "Baby Shower Cakes",
+    "price": 0,
+    "image": "custom-babyshower.jpeg",
+    "description": "Gender reveal, baby pink or blue, soft pastels with tiny edible booties or onesies — whatever fits the moment.",
+    "custom": true
+  },
+  {
+    "id": 63,
+    "category": "Custom Cakes",
+    "name": "Anniversary Cakes",
+    "price": 0,
+    "image": "custom-anniversary.jpeg",
+    "description": "Roses, hearts, monograms, or the year carved on top — romantic cakes for milestone celebrations.",
+    "custom": true
+  },
+  {
+    "id": 64,
+    "category": "Custom Cakes",
+    "name": "Tiered & Designer Cakes",
+    "price": 0,
+    "image": "custom-tiered.jpeg",
+    "description": "Multi-tier or sculpted showstoppers. Share a reference photo or describe your vision — we'll bring it to life.",
+    "custom": true
   },
 
   {

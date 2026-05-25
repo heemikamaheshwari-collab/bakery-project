@@ -26,12 +26,28 @@
     const orderBase = "{{ url_for('order') }}";
 
     function openModal(card) {
+        const isCustom = card.dataset.cakeCustom === 'true';
         img.src = card.dataset.cakeImage;
         img.alt = card.dataset.cakeName;
         title.textContent = card.dataset.cakeName;
         desc.textContent = card.dataset.cakeDescription;
-        price.textContent = '₹' + card.dataset.cakePrice;
-        orderBtn.href = orderBase + '?cake=' + encodeURIComponent(card.dataset.cakeName);
+        if (isCustom) {
+            price.textContent = 'Price on Request';
+            price.classList.add('price-custom');
+            orderBtn.textContent = 'Inquire on WhatsApp';
+            orderBtn.classList.add('btn-wa');
+            // Defer to the inquiry popup rather than going straight to WhatsApp,
+            // so the customer sees what to mention.
+            orderBtn.href = '#';
+            orderBtn.dataset.openInquiry = card.dataset.cakeName;
+        } else {
+            price.textContent = '₹' + card.dataset.cakePrice;
+            price.classList.remove('price-custom');
+            orderBtn.textContent = 'Place Order';
+            orderBtn.classList.remove('btn-wa');
+            orderBtn.href = orderBase + '?cake=' + encodeURIComponent(card.dataset.cakeName);
+            delete orderBtn.dataset.openInquiry;
+        }
         modal.classList.add('open');
         modal.setAttribute('aria-hidden', 'false');
         document.body.style.overflow = 'hidden';
@@ -47,6 +63,18 @@
     });
     modal.querySelectorAll('[data-close-modal]').forEach(function(el) {
         el.addEventListener('click', closeModal);
+    });
+
+    // If the order button is in custom-cake mode, hand off to the inquiry popup
+    // instead of navigating away.
+    orderBtn.addEventListener('click', function(e) {
+        const inquireFor = orderBtn.dataset.openInquiry;
+        if (!inquireFor) return;
+        e.preventDefault();
+        closeModal();
+        if (typeof window.openInquiryPopup === 'function') {
+            window.openInquiryPopup(inquireFor);
+        }
     });
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape' && modal.classList.contains('open')) closeModal();

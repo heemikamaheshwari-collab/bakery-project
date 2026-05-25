@@ -1,0 +1,68 @@
+<div id="inquiry-modal" class="modal" aria-hidden="true">
+    <div class="modal-backdrop" data-close-inquiry></div>
+    <div class="modal-content inquiry-modal-content" role="dialog" aria-modal="true" aria-labelledby="inquiry-modal-title">
+        <button type="button" class="modal-close" data-close-inquiry aria-label="Close">&times;</button>
+        <div class="inquiry-illustration" aria-hidden="true">
+            <svg viewBox="0 0 64 64" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10 32 C10 18 20 10 32 10 S54 18 54 32 44 54 32 54 c-3 0-5-0.4-8-1L12 56l3.5-9.5C13 43 10 38 10 32z"
+                      fill="#25d366" stroke="#1da851" stroke-width="1.6"/>
+                <path d="M22 28h20M22 36h14" stroke="#ffffff" stroke-width="2.5"/>
+            </svg>
+        </div>
+        <div class="modal-body inquiry-body">
+            <h3 id="inquiry-modal-title">Let's design your custom cake</h3>
+            <p id="inquiry-modal-text">
+                Every custom cake is priced individually based on size, design, and ingredients.
+                Tell us your idea on WhatsApp — we'll quote within a few hours.
+            </p>
+            <ul class="inquiry-checklist">
+                <li>Theme or occasion (birthday, wedding, baby shower…)</li>
+                <li>Approximate size or number of servings</li>
+                <li>Date you need it by</li>
+                <li>Any reference images you've seen and loved</li>
+            </ul>
+            <div class="inquiry-actions">
+                <button type="button" class="btn btn-secondary" data-close-inquiry>Maybe later</button>
+                <a id="inquiry-whatsapp-btn" href="#" target="_blank" rel="noopener" class="btn btn-primary btn-wa">
+                    Chat on WhatsApp
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+(function() {
+    const modal = document.getElementById('inquiry-modal');
+    if (!modal) return;
+    const titleEl = document.getElementById('inquiry-modal-title');
+    const waBtn = document.getElementById('inquiry-whatsapp-btn');
+
+    function open(cakeName) {
+        titleEl.textContent = cakeName ? `Let's design your ${cakeName}` : "Let's design your custom cake";
+        const msg = `Hi! I'm interested in a custom cake (${cakeName || 'Custom Designer Cake'}). I'd love to discuss the design and get a quote.\n\nTheme/occasion: \nApprox. size or servings: \nNeeded by: `;
+        waBtn.href = `https://wa.me/{{ baker_whatsapp }}?text=${encodeURIComponent(msg)}`;
+        modal.classList.add('open');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+    }
+    function close() {
+        modal.classList.remove('open');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+    }
+
+    // Expose globally so other modals (cake lightbox, etc.) can open the inquiry popup.
+    window.openInquiryPopup = open;
+
+    document.querySelectorAll('[data-inquire-cake]').forEach(function(btn) {
+        btn.addEventListener('click', function() { open(btn.dataset.inquireCake); });
+    });
+    modal.querySelectorAll('[data-close-inquiry]').forEach(function(el) {
+        el.addEventListener('click', close);
+    });
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && modal.classList.contains('open')) close();
+    });
+})();
+</script>

@@ -252,6 +252,19 @@ def inject_globals():
     return {"baker_whatsapp": BAKER_WHATSAPP, "bakery_name": BAKERY_NAME}
 
 
+@app.template_filter("whatsapp_inquiry")
+def _whatsapp_inquiry(cake_name):
+    """Build a WhatsApp link pre-filled with a custom-cake inquiry message."""
+    message = (
+        f"Hi {BAKERY_NAME}! I'm interested in a custom cake "
+        f"({cake_name}). I'd love to discuss the design and get a quote.\n\n"
+        f"Theme/occasion: \n"
+        f"Approx. size or servings: \n"
+        f"Needed by: "
+    )
+    return f"https://wa.me/{BAKER_WHATSAPP}?text={quote(message)}"
+
+
 @app.template_filter("image_url")
 def _image_url(value):
     """Resolve a stored image reference to a renderable src.
@@ -267,9 +280,10 @@ def _image_url(value):
     return url_for("static", filename=f"uploads/{value}")
 
 
-CATEGORIES = ["Cakes", "Cupcakes", "Cookies", "Brownies", "Cheesecakes", "Jar Cakes", "Gift Hampers"]
+CATEGORIES = ["Cakes", "Custom Cakes", "Cupcakes", "Cookies", "Brownies", "Cheesecakes", "Jar Cakes", "Gift Hampers"]
 CATEGORY_ICONS = {
     "Cakes": "🎂",
+    "Custom Cakes": "🎨",
     "Cupcakes": "🧁",
     "Cookies": "🍪",
     "Brownies": "🍫",

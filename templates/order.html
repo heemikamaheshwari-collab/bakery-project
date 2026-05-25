@@ -59,31 +59,19 @@
                         </label>
                     </div>
 
-                    <fieldset class="ai-flavor-wrap">
-                        <legend class="small-legend">Flavor <span class="req">*</span></legend>
-                        <div class="flavor-grid">
+                    <label>
+                        Flavor <span class="req">*</span>
+                        <select id="ai-flavor">
+                            <option value="">-- Choose a flavor --</option>
                             {% for f in flavors %}
-                            <label class="flavor-option">
-                                <input type="radio" name="ai-flavor" value="{{ f }}">
-                                <span>{{ f }}</span>
-                            </label>
+                                <option value="{{ f }}">{{ f }}</option>
                             {% endfor %}
-                        </div>
-                    </fieldset>
+                        </select>
+                    </label>
 
                     <label>
                         Customization (optional)
                         <textarea id="ai-customization" rows="3" placeholder="Theme, message on top, color preferences, allergies, eggless, etc."></textarea>
-                    </label>
-
-                    <label class="image-upload-label">
-                        Reference image (optional)
-                        <input type="file" id="ai-image" accept="image/jpeg,image/png,image/webp,image/jpg">
-                        <small class="form-hint">Share a design reference photo. Max 5 MB. JPG, PNG, or WEBP.</small>
-                        <div id="ai-image-preview" class="image-preview-wrap" hidden>
-                            <img id="ai-image-preview-img" src="" alt="Preview">
-                            <button type="button" class="image-clear-btn" id="ai-image-clear" aria-label="Remove image">&times;</button>
-                        </div>
                     </label>
 
                     <button type="button" class="btn btn-primary" id="add-item-btn">+ Add to order</button>
@@ -192,7 +180,6 @@
         } else {
             cartList.innerHTML = items.map((it, i) => `
                 <div class="cart-item" data-i="${i}">
-                    ${it.image_data ? `<img class="cart-item-thumb" src="${it.image_data}" alt="Reference">` : ''}
                     <div class="cart-item-main">
                         <h4>${escapeHtml(it.cake)}</h4>
                         <div class="cart-item-meta">
@@ -264,45 +251,11 @@
     cakeSelect.addEventListener('change', rebuildSize);
     rebuildSize();
 
-    const imgInput = document.getElementById('ai-image');
-    const imgPreview = document.getElementById('ai-image-preview');
-    const imgPreviewImg = document.getElementById('ai-image-preview-img');
-    let pendingImageDataUrl = null;
-
-    function clearPendingImage() {
-        pendingImageDataUrl = null;
-        imgInput.value = '';
-        imgPreview.hidden = true;
-        imgPreviewImg.src = '';
-    }
-    document.getElementById('ai-image-clear').addEventListener('click', clearPendingImage);
-
-    imgInput.addEventListener('change', function() {
-        const file = imgInput.files[0];
-        if (!file) { clearPendingImage(); return; }
-        if (file.size > 5 * 1024 * 1024) {
-            alert('Image is too large. Please pick a file under 5 MB.');
-            clearPendingImage();
-            return;
-        }
-        const reader = new FileReader();
-        reader.onload = function() {
-            pendingImageDataUrl = reader.result;
-            imgPreviewImg.src = reader.result;
-            imgPreview.hidden = false;
-        };
-        reader.onerror = function() {
-            alert('Could not read that image.');
-            clearPendingImage();
-        };
-        reader.readAsDataURL(file);
-    });
-
     document.getElementById('add-item-btn').addEventListener('click', function() {
         const cake = cakeSelect.value.trim();
         const size = document.getElementById('ai-size').value.trim();
         const qty = parseInt(document.getElementById('ai-qty').value) || 1;
-        const flavor = (document.querySelector('input[name="ai-flavor"]:checked') || {}).value || '';
+        const flavor = document.getElementById('ai-flavor').value.trim();
         const customization = document.getElementById('ai-customization').value.trim();
         const category = selectedCategory();
         const sizeRequired = SIZE_REQUIRED_CATEGORIES.includes(category);
@@ -315,16 +268,14 @@
             cake, size, flavor,
             quantity: Math.max(1, Math.min(50, qty)),
             customization,
-            image_data: pendingImageDataUrl || ''
         });
         renderCart();
 
         document.getElementById('ai-cake').value = '';
         document.getElementById('ai-size').value = '';
         document.getElementById('ai-qty').value = '1';
-        document.querySelectorAll('input[name="ai-flavor"]').forEach(r => r.checked = false);
+        document.getElementById('ai-flavor').value = '';
         document.getElementById('ai-customization').value = '';
-        clearPendingImage();
         rebuildSize();
         addPanel.open = false;
         setTimeout(() => addPanel.open = true, 50);
