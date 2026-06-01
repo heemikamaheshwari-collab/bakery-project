@@ -391,6 +391,39 @@ main > section { padding: 6rem 1.5rem; max-width: var(--max-w); margin: 0 auto; 
 }
 .btn-wa:hover { background: var(--wa-green-dark); border-color: var(--wa-green-dark); }
 
+/* Hide "Download App" UI when the site is running as the installed PWA/TWA.
+   display-mode: standalone is true inside the installed app, false in a browser. */
+@media all and (display-mode: standalone) {
+    .btn-app,
+    .footer-app-link,
+    .app-cta-row,
+    .install-steps {
+        display: none !important;
+    }
+    .app-installed-banner { display: block !important; }
+}
+.app-installed-banner {
+    display: none;
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem 1.75rem;
+    margin-top: 1.5rem;
+    text-align: left;
+}
+.app-installed-banner strong {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.25rem;
+    color: var(--ink);
+    display: block;
+    margin-bottom: 0.4rem;
+}
+.app-installed-banner p {
+    color: var(--muted);
+    margin: 0 0 1rem;
+    font-size: 0.95rem;
+}
+
 /* "Download App" hero CTA — sits in the buttons row alongside Order/Browse */
 .btn-app {
     background: #2e7d32;

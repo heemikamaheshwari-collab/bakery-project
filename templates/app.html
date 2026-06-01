@@ -24,6 +24,11 @@
                 Android only for now. iOS users — open this site in Safari and tap
                 <strong>Share &rarr; Add to Home Screen</strong>.
             </p>
+            <div class="app-installed-banner">
+                <strong>You're already using the {{ bakery_name }} app!</strong>
+                <p>Tap below to start exploring.</p>
+                <a href="{{ url_for('menu') }}" class="btn btn-primary btn-large">Browse menu</a>
+            </div>
         </div>
         <div class="app-hero-visual">
             <div class="app-phone-frame">
