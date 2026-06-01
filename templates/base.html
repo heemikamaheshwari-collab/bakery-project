@@ -88,7 +88,9 @@
     // Respects prefers-reduced-motion.
     (function() {
         const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        const targets = document.querySelectorAll('main > section, .cake-card, .why-item, .menu-tile, .testimonial, .step');
+        // Exclude .photo-grid section (it's huge on mobile and the threshold won't trigger);
+        // its children .photo-tile get their own reveal instead.
+        const targets = document.querySelectorAll('main > section:not(.photo-grid), .cake-card, .why-item, .menu-tile, .testimonial, .step, .photo-tile');
         targets.forEach(el => el.classList.add('reveal'));
 
         if (reduce || !('IntersectionObserver' in window)) {
@@ -102,7 +104,7 @@
                     io.unobserve(e.target);
                 }
             });
-        }, { threshold: 0.08, rootMargin: '0px 0px -50px 0px' });
+        }, { threshold: 0, rootMargin: '0px 0px 100px 0px' });
         targets.forEach(el => io.observe(el));
     })();
 

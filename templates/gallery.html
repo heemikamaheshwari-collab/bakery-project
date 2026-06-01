@@ -21,7 +21,9 @@
             data-image="{{ url_for('static', filename='images/' + cake.image) }}"
             data-name="{{ cake.name }}"
             aria-label="View {{ cake.name }}">
-        <img src="{{ url_for('static', filename='images/' + cake.image) }}" alt="{{ cake.name }}" loading="lazy">
+        <img src="{{ url_for('static', filename='images/' + cake.image) }}"
+             alt="{{ cake.name }}"
+             {% if loop.index <= 6 %}fetchpriority="high"{% else %}loading="lazy"{% endif %}>
         <span class="photo-tile-name">{{ cake.name }}</span>
     </button>
     {% endfor %}
