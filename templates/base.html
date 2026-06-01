@@ -70,6 +70,18 @@
     // PWA: register the service worker so Android/Chrome treat the site as installable.
     // Single-line registration that static analyzers (PWABuilder, Lighthouse) recognize reliably.
     if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/service-worker.js'); }
+
+    // Detect if the site is running as the installed PWA / TWA / iOS home-screen app
+    // and tag <html> with `is-pwa` so CSS can hide install-only UI.
+    (function() {
+        var isStandalone =
+            window.matchMedia('(display-mode: standalone)').matches ||
+            window.matchMedia('(display-mode: fullscreen)').matches ||
+            window.matchMedia('(display-mode: minimal-ui)').matches ||
+            window.navigator.standalone === true ||
+            document.referrer.indexOf('android-app://') === 0;
+        if (isStandalone) document.documentElement.classList.add('is-pwa');
+    })();
     </script>
     <script>
     // Scroll-reveal: fade + slide-up sections as they enter the viewport.
