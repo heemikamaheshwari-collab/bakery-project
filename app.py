@@ -6,7 +6,7 @@ from datetime import datetime
 from functools import wraps
 from urllib.parse import quote
 from dotenv import load_dotenv
-from flask import Flask, render_template, request, redirect, url_for, Response
+from flask import Flask, render_template, request, redirect, url_for, Response, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import String, DateTime, Boolean, JSON
 
@@ -496,6 +496,28 @@ def menu():
 @app.route("/app")
 def app_page():
     return render_template("app.html", bakery_name=BAKERY_NAME)
+
+
+@app.route("/service-worker.js")
+def service_worker():
+    """Serve the SW from the site root so its scope can be '/'.
+
+    Files inside /static/ get scope /static/ by default; PWA tooling (including
+    PWABuilder) then can't see the worker for the whole site. Serving from /
+    with the Service-Worker-Allowed header avoids that.
+    """
+    resp = send_from_directory(app.static_folder, "service-worker.js",
+                               mimetype="application/javascript")
+    resp.headers["Service-Worker-Allowed"] = "/"
+    resp.headers["Cache-Control"] = "no-cache"
+    return resp
+
+
+@app.route("/manifest.json")
+def manifest():
+    """Mirror the manifest at site root too — some tools look here first."""
+    return send_from_directory(app.static_folder, "manifest.json",
+                               mimetype="application/manifest+json")
 
 
 @app.route("/gallery")

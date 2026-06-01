@@ -1,15 +1,19 @@
 {
+  "id": "/?source=pwa",
   "name": "Shrutiscakes and more",
   "short_name": "Shrutiscakes",
-  "description": "Handcrafted cakes, cookies, brownies and more — order on WhatsApp from Jaipur's home bakery.",
-  "start_url": "/",
+  "description": "Handcrafted cakes, cupcakes, brownies, cookies and more — order on WhatsApp from Jaipur's home bakery. Custom designs, eggless options, fresh-baked daily.",
+  "start_url": "/?source=pwa",
   "scope": "/",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui", "browser"],
   "orientation": "portrait",
   "background_color": "#faf6f1",
   "theme_color": "#8a4a55",
   "lang": "en-IN",
+  "dir": "ltr",
   "categories": ["food", "shopping", "lifestyle"],
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "/static/images/icon-192.png",
@@ -30,18 +34,48 @@
       "purpose": "maskable"
     }
   ],
+  "screenshots": [
+    {
+      "src": "/static/images/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Shrutiscakes — home page"
+    },
+    {
+      "src": "/static/images/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Shrutiscakes — mobile"
+    }
+  ],
   "shortcuts": [
     {
       "name": "Place an order",
       "short_name": "Order",
+      "description": "Build your cake order",
       "url": "/order",
-      "description": "Build your cake order"
+      "icons": [
+        {
+          "src": "/static/images/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
     },
     {
       "name": "Browse menu",
       "short_name": "Menu",
+      "description": "See cakes, cupcakes, cookies and more",
       "url": "/menu",
-      "description": "See cakes, cupcakes, cookies and more"
+      "icons": [
+        {
+          "src": "/static/images/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
     }
   ]
 }
