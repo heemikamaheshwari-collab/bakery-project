@@ -68,13 +68,8 @@
 
     <script>
     // PWA: register the service worker so Android/Chrome treat the site as installable.
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', function() {
-            navigator.serviceWorker
-                .register('/service-worker.js', { scope: '/' })
-                .catch(function(err) { console.warn('[pwa] SW registration failed:', err); });
-        });
-    }
+    // Single-line registration that static analyzers (PWABuilder, Lighthouse) recognize reliably.
+    if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/service-worker.js'); }
     </script>
     <script>
     // Scroll-reveal: fade + slide-up sections as they enter the viewport.
