@@ -520,6 +520,18 @@ def manifest():
                                mimetype="application/manifest+json")
 
 
+@app.route("/.well-known/assetlinks.json")
+def assetlinks():
+    """Digital Asset Links — verifies our TWA Android app owns this domain.
+
+    Android fetches this file when the TWA launches; if the SHA-256 fingerprint
+    matches the installed APK's signing key, the Chrome URL bar is hidden and
+    the app feels fully native.
+    """
+    return send_from_directory(app.static_folder, "assetlinks.json",
+                               mimetype="application/json")
+
+
 @app.route("/gallery")
 def gallery():
     items, selected = _filtered_products()

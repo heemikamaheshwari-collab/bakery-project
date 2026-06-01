@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "app.vercel.bakery_project_dusky.twa",
+      "sha256_cert_fingerprints": [
+        "0D:92:7F:04:42:5A:8A:2D:C3:81:41:8C:E6:BD:63:FB:F6:B8:1E:6B:E9:BB:32:06:65:02:2E:46:11:0A:FA:F5"
+      ]
+    }
+  }
+]
