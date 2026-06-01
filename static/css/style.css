@@ -1428,10 +1428,24 @@ main > section { padding: 6rem 1.5rem; max-width: var(--max-w); margin: 0 auto; 
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 1rem;
 }
+@media (max-width: 720px) {
+    .photo-grid { grid-template-columns: repeat(2, 1fr); gap: 0.6rem; }
+}
 .photo-tile {
-    position: relative;
+    /* Full button reset — mobile browsers add their own defaults that break sizing */
+    appearance: none;
+    -webkit-appearance: none;
     border: none;
     padding: 0;
+    margin: 0;
+    font: inherit;
+    color: inherit;
+    text-align: left;
+    -webkit-tap-highlight-color: transparent;
+
+    position: relative;
+    display: block;
+    width: 100%;
     background: var(--soft);
     border-radius: var(--radius);
     overflow: hidden;
@@ -1442,6 +1456,8 @@ main > section { padding: 6rem 1.5rem; max-width: var(--max-w); margin: 0 auto; 
 }
 .photo-tile:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
 .photo-tile img {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
