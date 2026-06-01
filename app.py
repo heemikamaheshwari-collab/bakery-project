@@ -493,6 +493,11 @@ def menu():
     )
 
 
+@app.route("/app")
+def app_page():
+    return render_template("app.html", bakery_name=BAKERY_NAME)
+
+
 @app.route("/gallery")
 def gallery():
     items, selected = _filtered_products()

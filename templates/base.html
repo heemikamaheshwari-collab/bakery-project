@@ -5,6 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}{{ bakery_name }}{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <!-- PWA: makes the site installable as an Android/iOS app -->
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    <meta name="theme-color" content="#8a4a55">
+    <meta name="description" content="Handcrafted cakes, cookies, brownies and more — order on WhatsApp from Jaipur's home bakery.">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/apple-touch-icon.png') }}">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Shrutiscakes">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -38,7 +49,10 @@
                 <li>Delivery available in <strong>Jaipur only</strong>.</li>
             </ul>
         </div>
-        <p class="footer-credit">&copy; {{ bakery_name }} &middot; Baked fresh, with love.</p>
+        <p class="footer-credit">
+            &copy; {{ bakery_name }} &middot; Baked fresh, with love. &middot;
+            <a href="{{ url_for('app_page') }}" class="footer-app-link">Get the Android app</a>
+        </p>
     </footer>
 
     {% block whatsapp_fab %}
@@ -52,6 +66,16 @@
     </a>
     {% endblock %}
 
+    <script>
+    // PWA: register the service worker so Android/Chrome treat the site as installable.
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+            navigator.serviceWorker
+                .register('{{ url_for("static", filename="service-worker.js") }}', { scope: '/' })
+                .catch(function(err) { console.warn('[pwa] SW registration failed:', err); });
+        });
+    }
+    </script>
     <script>
     // Scroll-reveal: fade + slide-up sections as they enter the viewport.
     // Respects prefers-reduced-motion.

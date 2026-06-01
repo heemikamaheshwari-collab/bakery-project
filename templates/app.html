@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Get the App &middot; {{ bakery_name }}{% endblock %}
+
+{% block content %}
+<section class="app-page">
+    <div class="app-hero">
+        <div class="app-hero-text">
+            <span class="eyebrow">Now on your phone</span>
+            <h1>Get the {{ bakery_name }} app</h1>
+            <p class="lead">
+                One tap to browse, customize, and order your favorite bakes. Faster than the website,
+                works offline, full-screen — your sweet shortcut to fresh cakes in Jaipur.
+            </p>
+            <div class="app-cta-row">
+                <a href="{{ url_for('static', filename='downloads/shrutis_cakesanddmore.apk') }}"
+                   class="btn btn-primary btn-large"
+                   id="apk-download"
+                   download>
+                    Download for Android
+                </a>
+                <a href="#install-steps" class="btn btn-secondary btn-large">How to install</a>
+            </div>
+            <p class="app-disclaimer">
+                Android only for now. iOS users — open this site in Safari and tap
+                <strong>Share &rarr; Add to Home Screen</strong>.
+            </p>
+        </div>
+        <div class="app-hero-visual">
+            <div class="app-phone-frame">
+                <div class="app-phone-screen">
+                    <img src="{{ url_for('static', filename='images/logo.jpeg') }}" alt="{{ bakery_name }}">
+                    <p class="app-phone-label">{{ bakery_name }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section class="app-features">
+        <div class="app-feature">
+            <div class="app-feature-num">01</div>
+            <h3>Faster to order</h3>
+            <p>Skip browser tabs. Tap the icon, place your order, send on WhatsApp.</p>
+        </div>
+        <div class="app-feature">
+            <div class="app-feature-num">02</div>
+            <h3>Works offline</h3>
+            <p>Browse the menu and gallery even when you're on patchy data.</p>
+        </div>
+        <div class="app-feature">
+            <div class="app-feature-num">03</div>
+            <h3>Always with you</h3>
+            <p>Icon on your home screen. Open it like any other app.</p>
+        </div>
+    </section>
+
+    <section id="install-steps" class="install-steps">
+        <span class="eyebrow">Install in 4 steps</span>
+        <h2>How to install on Android</h2>
+        <ol class="install-list">
+            <li>
+                <strong>Tap "Download for Android"</strong> above. A file called
+                <code>shrutis_cakesanddmore.apk</code> will start downloading.
+            </li>
+            <li>
+                <strong>Open the file.</strong> Tap the notification when it finishes,
+                or find it in your Downloads folder.
+            </li>
+            <li>
+                <strong>Allow installs from this source.</strong> Android shows a one-time prompt —
+                tap <em>"Settings"</em> &rarr; toggle <em>"Allow from this source"</em> &rarr; come back.
+                You only need to do this once.
+            </li>
+            <li>
+                <strong>Tap Install.</strong> If Play Protect warns about an "unrecognized app",
+                tap <em>"Install anyway"</em>. The icon will appear on your home screen.
+            </li>
+        </ol>
+        <p class="install-note">
+            <strong>Why the warnings?</strong> This app isn't on the Play Store yet — Android always
+            shows extra prompts for direct downloads. The app is the same site you're already on,
+            packaged for your phone.
+        </p>
+    </section>
+</section>
+{% endblock %}
