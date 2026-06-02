@@ -434,10 +434,627 @@ html[data-nav="back"]::view-transition-new(root) {
 }
 
 /* ────────────────────────────────────────────────────────────
- * 11. Per-section hides — drop website content from app mode
- *     one section at a time, keeping the web untouched.
+ * 11. Hide website-only marketing sections in app mode
+ *     What stays: .why-us (restyled as a carousel) + .cta-banner (restyled).
+ *     What goes: .hero (the "Order Now" CTA is moving onto the new hero
+ *     banner), .menu-grid-section (replaced by .app-menu-grid), .featured,
+ *     .testimonials, .how-it-works, and all marketing chrome.
  * ──────────────────────────────────────────────────────────── */
-.is-pwa .why-us,
-.is-pwa .how-it-works {
+.is-pwa .hero,
+.is-pwa .menu-grid-section,
+.is-pwa .how-it-works,
+.is-pwa .testimonials,
+.is-pwa .featured,
+.is-pwa .page-header,
+.is-pwa .section-sub,
+.is-pwa .eyebrow,
+.is-pwa .center-head .eyebrow {
+    display: none !important;
+}
+
+.is-pwa main { padding: 0; }
+.is-pwa main > section {
+    padding: 1rem 0.85rem 1.25rem;
+    margin: 0;
+    max-width: 100%;
+}
+
+/* ────────────────────────────────────────────────────────────
+ * 12. Search bar — white pill wrapped in an outer cream strip.
+ *     Layout: icon → input → custom × clear (in that order).
+ *     The browser's native search-input × is suppressed via the
+ *     ::-webkit-search-cancel-button selectors below.
+ * ──────────────────────────────────────────────────────────── */
+.is-pwa .app-search {
+    display: block;
+    padding: 0.5rem 0.75rem;
+    background: var(--accent-soft);
+    position: sticky;
+    top: 0;
+    z-index: 45;
+    border: none;
+}
+
+.is-pwa .app-search-pill {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #fff;
+    border-radius: 12px;
+    padding: 0 0.7rem;
+    box-shadow: 0 1px 3px rgba(31, 20, 16, 0.06);
+}
+
+.is-pwa .app-search-icon {
+    color: var(--muted);
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+.is-pwa #app-search-input {
+    flex: 1;
+    min-width: 0;                /* allow shrinking inside flex */
+    border: none;
+    background: transparent;
+    padding: 0.75rem 0;
+    font-size: 16px;             /* >=16px so iOS Safari doesn't auto-zoom */
+    color: var(--ink);
+    caret-color: var(--accent);  /* visible blinking caret */
+    cursor: text;
+    outline: none;
+    -webkit-user-select: text;
+    user-select: text;
+}
+
+.is-pwa #app-search-input::placeholder {
+    color: var(--muted);
+    opacity: 1;
+}
+
+/* Suppress every flavour of native search-input ornament so the only ×
+   is our own .app-search-clear button. */
+.is-pwa #app-search-input::-webkit-search-cancel-button,
+.is-pwa #app-search-input::-webkit-search-decoration,
+.is-pwa #app-search-input::-webkit-search-results-button,
+.is-pwa #app-search-input::-webkit-search-results-decoration {
+    -webkit-appearance: none;
+    appearance: none;
     display: none;
+}
+
+.is-pwa .app-search-clear {
+    background: rgba(0, 0, 0, 0.08);
+    color: var(--ink);
+    border: none;
+    border-radius: 999px;
+    width: 22px;
+    height: 22px;
+    font-size: 1.05rem;
+    line-height: 1;
+    flex-shrink: 0;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Autocomplete dropdown — appears below the search pill, lists matching
+   products with image + name + price. Tapping a row navigates to /order
+   (or /menu for custom cakes). */
+.is-pwa .app-search-dropdown {
+    position: absolute;
+    top: calc(100% - 0.1rem);
+    left: 0.75rem;
+    right: 0.75rem;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 12px 32px rgba(31, 20, 16, 0.18),
+                0 2px 6px rgba(31, 20, 16, 0.06);
+    max-height: 70vh;
+    overflow-y: auto;
+    z-index: 60;
+    padding: 0.35rem 0;
+}
+
+.is-pwa .app-search-suggestion {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.55rem 0.9rem;
+    text-decoration: none;
+    color: var(--ink);
+    transition: background 100ms ease;
+}
+
+.is-pwa .app-search-suggestion:active {
+    background: var(--accent-soft);
+}
+
+.is-pwa .app-search-suggestion-img {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background-size: cover;
+    background-position: center;
+    background-color: var(--soft);
+    flex-shrink: 0;
+}
+
+.is-pwa .app-search-suggestion-meta {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.is-pwa .app-search-suggestion-name {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--ink);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.is-pwa .app-search-suggestion-price {
+    font-size: 0.78rem;
+    color: var(--muted);
+}
+
+.is-pwa .app-search-no-match {
+    padding: 0.95rem 1rem;
+    color: var(--muted);
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.is-pwa .app-search-no-match strong {
+    color: var(--ink);
+    font-weight: 600;
+}
+
+/* Search bar only appears on home. Hide on every other route. */
+.is-pwa body[data-route="menu"] .app-search,
+.is-pwa body[data-route="gallery"] .app-search,
+.is-pwa body[data-route="order"] .app-search,
+.is-pwa body[data-route="admin_view"] .app-search,
+.is-pwa body[data-route="app_page"] .app-search {
+    display: none !important;
+}
+
+/* ────────────────────────────────────────────────────────────
+ * 13. Hero banner — autoplay poster carousel with ORDER NOW CTA
+ *     Bakingo-style: large promotional banner that takes most of the
+ *     above-the-fold area, auto-rotates through categories, each slide
+ *     has tagline + category name + ORDER NOW button.
+ * ──────────────────────────────────────────────────────────── */
+.is-pwa .app-hero-banner {
+    display: block;
+    padding: 0;
+    margin: 0;
+    background: var(--accent-soft);
+    position: relative;
+}
+
+.is-pwa .app-hero-track {
+    display: flex;
+    overflow: hidden;
+    position: relative;
+    height: 60vh;
+    max-height: 540px;
+    min-height: 380px;
+}
+
+.is-pwa .app-hero-slide {
+    flex: 0 0 100%;
+    min-width: 100%;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: relative;
+    transition: transform 480ms cubic-bezier(0.22, 0.61, 0.36, 1);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 1.5rem 1.5rem 2.5rem;
+    color: #fff;
+}
+
+.is-pwa .app-hero-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+    text-align: center;
+    max-width: 90%;
+}
+
+.is-pwa .app-hero-tagline {
+    font-family: 'Playfair Display', Georgia, serif;   /* keep the brand serif here for that "love story" feel */
+    font-style: italic;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #fff;
+    letter-spacing: 0.01em;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+    line-height: 1.25;
+}
+
+.is-pwa .app-hero-title {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                 "Inter", system-ui, sans-serif;
+    font-size: 1.55rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: #fff;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+    line-height: 1.1;
+}
+
+.is-pwa .app-hero-cta {
+    display: inline-block;
+    margin-top: 0.5rem;
+    padding: 0.7rem 1.6rem;
+    background: var(--accent);
+    color: #fff;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-decoration: none;
+    box-shadow: 0 4px 14px rgba(138, 74, 85, 0.45);
+    transition: transform 100ms ease, background 100ms ease;
+}
+
+.is-pwa .app-hero-cta:active,
+.is-pwa .app-hero-cta.pressing {
+    transform: scale(0.96);
+    background: var(--accent-dark);
+}
+
+.is-pwa .app-hero-dots {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    padding: 0.9rem 0 0.6rem;
+    background: var(--accent-soft);
+    margin: 0;
+}
+
+.is-pwa .app-hero-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    background: rgba(138, 74, 85, 0.28);
+    transition: width 200ms ease, background 200ms ease;
+}
+
+.is-pwa .app-hero-dot.active {
+    width: 18px;
+    background: var(--accent);
+}
+
+/* ────────────────────────────────────────────────────────────
+ * 14. Menu grid — 3 columns, image tile with label below (Bakingo-style)
+ * ──────────────────────────────────────────────────────────── */
+.is-pwa .app-menu-grid {
+    display: block;
+    padding: 1.25rem 0.85rem 1.25rem;
+    background: var(--bg);
+}
+
+.is-pwa .app-menu-grid-header {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.is-pwa .app-menu-grid-title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 2.1rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin: 0 0 0.15rem;
+    letter-spacing: -0.01em;
+}
+
+.is-pwa .app-menu-grid-sub {
+    font-size: 0.95rem;
+    color: var(--muted);
+    margin: 0;
+}
+
+.is-pwa .app-menu-grid-tiles {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem 0.65rem;          /* a little gap — was 0.6rem 0.55rem */
+}
+
+.is-pwa .app-menu-grid-tile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    transition: transform 100ms ease;
+}
+
+.is-pwa .app-menu-grid-tile:active,
+.is-pwa .app-menu-grid-tile.pressing {
+    transform: scale(0.96);
+}
+
+.is-pwa .app-menu-grid-tile-img {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: 12px;
+    background-size: cover;
+    background-position: center;
+    background-color: var(--soft);
+    box-shadow: 0 2px 8px rgba(31, 20, 16, 0.08);
+}
+
+.is-pwa .app-menu-grid-tile-label {
+    margin-top: 0.45rem;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                 "Inter", system-ui, sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: 0.05em;
+    text-align: center;
+    line-height: 1.2;
+}
+
+/* ────────────────────────────────────────────────────────────
+ * 15. Why-us as a horizontal scroll-snap carousel (Bakingo "Our Promise")
+ *     Reuses the existing .why-us markup — no template changes. Each
+ *     .why-item becomes one slide. JS adds dots + auto-rotate.
+ * ──────────────────────────────────────────────────────────── */
+.is-pwa .why-us {
+    display: block !important;
+    background: var(--accent-soft);
+    padding: 1.5rem 0 1.25rem;
+    text-align: center;
+    margin: 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.is-pwa .why-us .center-head {
+    padding: 0 1rem;
+    margin-bottom: 0.6rem;
+}
+
+.is-pwa .why-us h2 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin: 0 0 0.15rem;
+    text-align: center;
+}
+
+/* FADE carousel — slides stack on top of each other via absolute positioning,
+   only the .active one is opaque. No translateX, no flex layout that flex-shrinks
+   content. Bulletproof against the .reveal IntersectionObserver because we set
+   opacity here with !important. */
+.is-pwa .why-grid {
+    display: block !important;
+    position: relative;
+    width: 100%;
+    min-height: 260px;
+    overflow: hidden;
+    grid-template-columns: none !important;
+    gap: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+.is-pwa .why-grid::-webkit-scrollbar { display: none; }
+
+.is-pwa .why-item {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    opacity: 0 !important;
+    visibility: visible !important;
+    pointer-events: none;
+    transition: opacity 500ms ease;
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    padding: 1rem 1.5rem !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.6rem !important;
+    text-align: center !important;
+    transform: none !important;
+}
+
+.is-pwa .why-item.is-active {
+    opacity: 1 !important;
+    pointer-events: auto;
+    z-index: 1;
+}
+
+.is-pwa .why-item:hover {
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+.is-pwa .why-doodle {
+    width: 80px !important;
+    height: 80px !important;
+    margin: 0 !important;
+    flex-shrink: 0 !important;
+}
+
+.is-pwa .why-num { display: none !important; }
+
+.is-pwa .why-item h3 {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                 "Inter", system-ui, sans-serif !important;
+    font-size: 1.1rem !important;
+    font-weight: 700 !important;
+    color: var(--ink) !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    opacity: 1 !important;
+}
+
+.is-pwa .why-item p {
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: 0.9rem !important;
+    color: var(--muted) !important;
+    line-height: 1.5;
+    max-width: 280px;
+    opacity: 1 !important;
+}
+
+/* Dot indicators (injected by app.js after the .why-grid) */
+.is-pwa .why-us-dots {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    padding-top: 0.85rem;
+}
+
+.is-pwa .why-us-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    background: rgba(138, 74, 85, 0.28);
+    transition: width 200ms ease, background 200ms ease;
+}
+
+.is-pwa .why-us-dot.active {
+    width: 18px;
+    background: var(--accent);
+}
+
+/* ────────────────────────────────────────────────────────────
+ * 16. CTA banner — "Place an Order" card, brand-colored
+ * ──────────────────────────────────────────────────────────── */
+.is-pwa .cta-banner {
+    background: var(--accent);
+    color: #fff;
+    margin: 0 0.85rem 1rem;
+    padding: 1.5rem 1.25rem;
+    border-radius: 18px;
+    text-align: center;
+    box-shadow: 0 6px 20px rgba(138, 74, 85, 0.18);
+    max-width: none;
+}
+
+.is-pwa .cta-banner h2 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.45rem;
+    font-weight: 700;
+    color: #fff;
+    margin: 0 0 0.4rem;
+    line-height: 1.2;
+}
+
+.is-pwa .cta-banner p {
+    margin: 0 0 1rem;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.85);
+    line-height: 1.5;
+}
+
+.is-pwa .cta-banner .btn-primary {
+    display: inline-block;
+    padding: 0.75rem 1.6rem;
+    border-radius: 999px;
+    background: #fff;
+    color: var(--accent);
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: none;
+}
+
+.is-pwa .cta-banner .btn-primary:hover { background: #fff; color: var(--accent); }
+
+/* Search filter — hide non-matching cards/tiles when user types */
+.is-pwa .cake-card.search-hidden,
+.is-pwa .photo-tile.search-hidden,
+.is-pwa .app-menu-grid-tile.search-hidden {
+    display: none !important;
+}
+
+/* Result pill at the top of /menu or /gallery when arrived via ?q=QUERY.
+   Shows what's being filtered + a "Clear" button to return to the full list. */
+.is-pwa .app-search-result-pill {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem;
+    padding: 0.55rem 0.9rem;
+    margin: 0.6rem 0.85rem;
+    background: var(--accent-soft);
+    color: var(--accent-dark);
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    box-shadow: 0 1px 2px rgba(31, 20, 16, 0.04);
+}
+
+.is-pwa .app-search-result-pill strong {
+    color: var(--accent);
+    font-weight: 700;
+}
+
+.is-pwa .app-search-result-clear {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    padding: 0.3rem 0.8rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.is-pwa .app-search-result-clear:active {
+    background: var(--accent-dark);
+}
+
+/* Empty-state when no products matched the search query. */
+.is-pwa .app-search-empty {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: var(--muted);
+    grid-column: 1 / -1;
+}
+
+.is-pwa .app-search-empty p {
+    margin: 0.4rem 0;
+    font-size: 0.95rem;
+}
+
+.is-pwa .app-search-empty a {
+    color: var(--accent);
+    font-weight: 600;
+    text-decoration: none;
+    border-bottom: 1px solid currentColor;
 }

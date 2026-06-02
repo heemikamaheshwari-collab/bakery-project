@@ -24,12 +24,16 @@
     // Detect standalone (installed PWA / TWA / iOS home-screen) BEFORE first paint
     // so app.css overrides are applied in the same render pass — no flash of web styles.
     (function() {
+        // Optional testing helper: persist app-mode across browser page nav
+        // when sessionStorage.appMode === '1'. Invisible to normal website
+        // visitors (flag is only set if the user explicitly opts in via console).
         var isStandalone =
             window.matchMedia('(display-mode: standalone)').matches ||
             window.matchMedia('(display-mode: fullscreen)').matches ||
             window.matchMedia('(display-mode: minimal-ui)').matches ||
             window.navigator.standalone === true ||
-            document.referrer.indexOf('android-app://') === 0;
+            document.referrer.indexOf('android-app://') === 0 ||
+            (function() { try { return sessionStorage.getItem('appMode') === '1'; } catch (e) { return false; } })();
         if (isStandalone) {
             document.documentElement.classList.add('is-pwa');
             var link = document.createElement('link');
@@ -56,6 +60,20 @@
             <a href="{{ url_for('order') }}" class="nav-cta">Order Now</a>
         </nav>
     </header>
+
+    {# App-only search bar. `hidden` HTML attribute keeps it invisible on web with zero CSS;
+       app.css's .is-pwa rule overrides the UA [hidden] rule under .is-pwa.
+       Inner .app-search-pill wraps the actual control so we get a clean white-pill
+       layout without the brittle ::before-pseudo trick. #}
+    <div class="app-search" role="search" hidden>
+        <div class="app-search-pill">
+            <span class="app-search-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="18" height="18"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M10.5 17a6.5 6.5 0 1 1 0-13 6.5 6.5 0 0 1 0 13zm5-1.5L20 20"/></svg>
+            </span>
+            <input type="search" id="app-search-input" placeholder="Search for cakes, cupcakes, brownies..." autocomplete="off" spellcheck="false">
+            <button type="button" id="app-search-clear" class="app-search-clear" hidden aria-label="Clear search">&times;</button>
+        </div>
+    </div>
 
     <main>
         {% block content %}{% endblock %}
@@ -86,9 +104,10 @@
     </a>
     {% endblock %}
 
-    {# Bottom tab bar — rendered on every page but hidden on web; app.css makes it visible under .is-pwa. #}
+    {# Bottom tab bar — rendered on every page. `hidden` keeps it invisible on web with zero CSS.
+       app.css's .is-pwa selector overrides the UA [hidden] rule in app mode. #}
     {% block tab_bar %}
-    <nav class="app-tabbar" aria-label="App navigation">
+    <nav class="app-tabbar" aria-label="App navigation" hidden>
         <a href="{{ url_for('home') }}" data-tab="home" class="app-tab {% if active_route == 'home' %}active{% endif %}">
             <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path fill="currentColor" d="M12 3 2 12h3v8h5v-6h4v6h5v-8h3z"/></svg>
             <span>Home</span>

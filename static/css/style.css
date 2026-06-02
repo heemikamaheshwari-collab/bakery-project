@@ -1607,6 +1607,16 @@ main > section { padding: 6rem 1.5rem; max-width: var(--max-w); margin: 0 auto; 
     border-top: 1px solid var(--hairline);
     max-width: 540px;
     margin: 0 auto;
+    /* Keep "Get the Android app" on the same line as the copyright;
+       allow horizontal scroll on very narrow viewports if it overflows. */
+    white-space: nowrap;
+    overflow-x: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+.footer-credit::-webkit-scrollbar { display: none; }
+@media (max-width: 480px) {
+    .footer-credit { font-size: 0.68rem; letter-spacing: 0.08em; }
 }
 
 /* Admin */

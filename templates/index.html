@@ -1,6 +1,55 @@
 {% extends "base.html" %}
 
 {% block content %}
+{# ─── APP-ONLY HOMEPAGE BLOCKS ───
+   These three sections are visible only when the site runs as the installed PWA/TWA.
+   Hidden on web by style.css defaults; app.css un-hides + styles under .is-pwa.
+   Markup re-uses the categories + category_images data already passed to this template. #}
+
+{# 1. Promotional hero banner — autoplay carousel with ORDER NOW CTA (Bakingo-style)
+   `hidden` keeps it invisible on web with zero CSS; app.css un-hides it under .is-pwa. #}
+<section class="app-hero-banner" aria-label="Featured collections" hidden>
+    <div class="app-hero-track" id="app-hero-track">
+        {% set taglines = ['Every slice, a love story', 'Baked fresh, baked with love', 'Make every moment sweeter', 'Crafted just for you'] %}
+        {# hero_overrides — point a specific category's banner slide at a different
+           image than the one its first product uses. Keeps the product card photo
+           (e.g. cake1.jpeg) unchanged while letting the hero show a feature image. #}
+        {% set hero_overrides = {'Cakes': 'download.jpg'} %}
+        {% for cat in categories %}
+            {% set hero_img = hero_overrides[cat] if cat in hero_overrides else category_images[cat] %}
+            {% if hero_img and loop.index <= 5 %}
+            <div class="app-hero-slide"
+                 style="background-image: linear-gradient(180deg, rgba(31,20,16,0.15) 0%, rgba(31,20,16,0.60) 75%, rgba(31,20,16,0.85) 100%), url('{{ url_for('static', filename='images/' + hero_img) }}');">
+                <div class="app-hero-inner">
+                    <span class="app-hero-tagline">{{ taglines[(loop.index0) % taglines|length] }}</span>
+                    <h2 class="app-hero-title">{{ cat|upper }}</h2>
+                    <a href="{{ url_for('menu', category=cat) }}" class="app-hero-cta">Order Now</a>
+                </div>
+            </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+    <div class="app-hero-dots" id="app-hero-dots" aria-hidden="true"></div>
+</section>
+
+{# 2. Menu grid — 3 categories per row, image tile with label below (Bakingo-style). Hidden on web via [hidden]. #}
+<section class="app-menu-grid" hidden>
+    <header class="app-menu-grid-header">
+        <h2 class="app-menu-grid-title">Menu</h2>
+        <p class="app-menu-grid-sub">What will you wish for?</p>
+    </header>
+    <div class="app-menu-grid-tiles">
+        {% for cat in categories %}
+        <a href="{{ url_for('menu', category=cat) }}" class="app-menu-grid-tile">
+            <div class="app-menu-grid-tile-img"
+                 {% if category_images[cat] %}style="background-image:url('{{ url_for('static', filename='images/' + category_images[cat]) }}');"{% endif %}>
+            </div>
+            <span class="app-menu-grid-tile-label">{{ cat|upper }}</span>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+
 <section class="hero">
     <div class="hero-inner">
         <div class="hero-text">
