@@ -402,6 +402,10 @@ main > section { padding: 6rem 1.5rem; max-width: var(--max-w); margin: 0 auto; 
 }
 .is-pwa .app-installed-banner { display: block !important; }
 
+/* Tab bar markup lives in base.html so SSR is identical on web and app.
+   Hidden by default; app.css un-hides it under .is-pwa. */
+.app-tabbar { display: none; }
+
 @media all and (display-mode: standalone) {
     .btn-app,
     .footer-app-link,

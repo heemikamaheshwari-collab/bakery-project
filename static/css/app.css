@@ -1,0 +1,443 @@
+/* Shrutiscakes — APP OVERLAY STYLES
+ *
+ * Loaded ONLY when the site is opened as an installed PWA / TWA / iOS home-screen app.
+ * Detection: head-script in base.html sets `class="is-pwa"` on <html> before first paint
+ * and dynamically injects this stylesheet.
+ *
+ * Strategy: every rule is scoped under `.is-pwa` so loading order is irrelevant —
+ * the .is-pwa specificity bump guarantees these overrides win. This is the OVERLAY:
+ * web styling in style.css stays exactly as-is.
+ *
+ * Sections:
+ *   1. Global resets (kill webby behavior: tap highlight, selection, bounce, long-press)
+ *   2. Header — slim app-bar instead of full site header
+ *   3. Footer — hidden entirely
+ *   4. Scroll-reveal — disabled (apps appear instantly)
+ *   5. Bottom tab bar
+ *   6. Cross-document view transitions (Chrome 126+)
+ *   7. Press feedback (driven by .pressing class set in app.js)
+ *   8. Bottom-sheet modals (cake details, inquiry)
+ *   9. Order wizard polish (sticky CTA, anti-zoom inputs)
+ *  10. WhatsApp FAB repositioned above the tab bar
+ */
+
+/* ────────────────────────────────────────────────────────────
+ * 1. Global resets
+ * ──────────────────────────────────────────────────────────── */
+.is-pwa,
+.is-pwa body {
+    /* OS UI font stack — picks up Roboto on Android, SF on iOS */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                 'Inter', system-ui, sans-serif;
+    /* Kill iOS bounce + accidental pull-to-refresh that bleeds through TWA. */
+    overscroll-behavior: none;
+    /* No selectable text on UI chrome — apps don't do this. */
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+}
+
+/* Keep text selectable where it's actually useful. */
+.is-pwa .cake-body p,
+.is-pwa .cake-body h3,
+.is-pwa .modal-body,
+.is-pwa .modal-body p,
+.is-pwa input,
+.is-pwa textarea,
+.is-pwa select {
+    -webkit-user-select: text;
+    user-select: text;
+}
+
+/* Kill 300ms tap delay on all interactive elements. */
+.is-pwa a,
+.is-pwa button,
+.is-pwa .btn,
+.is-pwa .cake-card,
+.is-pwa .menu-tile {
+    touch-action: manipulation;
+}
+
+/* Suppress long-press image preview / "save image" menu. */
+.is-pwa img {
+    -webkit-touch-callout: none;
+    pointer-events: auto;
+}
+
+/* Body padding so content doesn't sit under the floating tab bar.
+   60px height + 12px bottom gap + safe-area + small buffer. */
+.is-pwa body {
+    padding-bottom: calc(60px + env(safe-area-inset-bottom) + 24px);
+}
+
+/* ────────────────────────────────────────────────────────────
+ * 2. Header — slim app-bar
+ *    Collapses on scroll-down, reappears on scroll-up (app.js drives the class).
+ * ──────────────────────────────────────────────────────────── */
+.is-pwa .site-header {
+    padding: 0.5rem 1rem;
+    padding-top: calc(0.5rem + env(safe-area-inset-top));
+    background: var(--accent);
+    color: #fff;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    /* Backdrop blur for the iOS-style glass look */
+    backdrop-filter: saturate(180%) blur(10px);
+    -webkit-backdrop-filter: saturate(180%) blur(10px);
+    transition: transform 240ms cubic-bezier(0.22, 0.61, 0.36, 1);
+    will-change: transform;
+}
+
+/* When scrolling down past a threshold, slide the header offscreen
+   to reclaim screen real estate (Twitter/Instagram pattern). */
+.is-pwa.header-hidden .site-header {
+    transform: translateY(-100%);
+}
+
+.is-pwa .site-header .brand {
+    color: #fff;
+    font-size: 1.05rem;
+    gap: 0.6rem;
+}
+
+.is-pwa .site-header .brand span {
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+
+.is-pwa .site-header .brand-logo {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+}
+
+/* Hamburger and inline nav are replaced by the bottom tab bar. */
+.is-pwa .nav-toggle,
+.is-pwa .nav {
+    display: none !important;
+}
+
+/* ────────────────────────────────────────────────────────────
+ * 3. Footer — apps don't have footers
+ * ──────────────────────────────────────────────────────────── */
+.is-pwa .site-footer {
+    display: none;
+}
+
+/* ────────────────────────────────────────────────────────────
+ * 4. Scroll-reveal — disabled
+ *    Apps appear; they don't fade in. Kill the transition and snap to final state.
+ * ──────────────────────────────────────────────────────────── */
+.is-pwa .reveal,
+.is-pwa .reveal.in-view {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+}
+
+/* ────────────────────────────────────────────────────────────
+ * 5. Bottom tab bar — floating with active-tab pill indicator
+ *    iOS 17 / Material 3 style: rounded, detached from edges, drop shadow.
+ *    Active tab has a soft-accent pill background.
+ * ──────────────────────────────────────────────────────────── */
+.is-pwa .app-tabbar {
+    display: flex;
+    position: fixed;
+    bottom: calc(env(safe-area-inset-bottom) + 12px);
+    left: 12px;
+    right: 12px;
+    z-index: 100;
+    height: 60px;
+    padding: 6px;
+    gap: 4px;
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 22px;
+    box-shadow: 0 8px 32px rgba(31, 20, 16, 0.14),
+                0 2px 8px rgba(31, 20, 16, 0.06);
+}
+
+.is-pwa .app-tab {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+    text-decoration: none;
+    color: var(--muted);
+    font-size: 0.66rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    padding: 4px 2px;
+    position: relative;
+    border-radius: 16px;
+    transition: background 200ms cubic-bezier(0.22, 0.61, 0.36, 1),
+                color 160ms ease;
+}
+
+.is-pwa .app-tab svg {
+    width: 22px;
+    height: 22px;
+    transition: transform 160ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* The pill — soft accent background fills the active tab. */
+.is-pwa .app-tab.active {
+    color: var(--accent);
+    background: var(--accent-soft);
+}
+
+.is-pwa .app-tab.active svg {
+    transform: scale(1.08) translateY(-1px);
+}
+
+.is-pwa .app-tab:active svg,
+.is-pwa .app-tab.pressing svg {
+    transform: scale(0.88);
+}
+
+/* WhatsApp FAB needs to sit above the floating tab bar's new bottom offset. */
+.is-pwa .whatsapp-fab {
+    bottom: calc(60px + env(safe-area-inset-bottom) + 24px);
+}
+
+/* ────────────────────────────────────────────────────────────
+ * 6. Cross-document view transitions (Chrome 126+)
+ *    Smooth slide between pages. Default: forward (new slides in from right).
+ *    app.js sets html[data-nav="back"] when user triggers history.back(),
+ *    which reverses the animation direction.
+ * ──────────────────────────────────────────────────────────── */
+@view-transition {
+    navigation: auto;
+}
+
+@keyframes app-slide-out-left {
+    to { transform: translateX(-30%); opacity: 0.6; }
+}
+@keyframes app-slide-in-right {
+    from { transform: translateX(100%); }
+}
+@keyframes app-slide-out-right {
+    to { transform: translateX(100%); }
+}
+@keyframes app-slide-in-left {
+    from { transform: translateX(-30%); opacity: 0.6; }
+}
+
+.is-pwa::view-transition-old(root) {
+    animation: app-slide-out-left 260ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+.is-pwa::view-transition-new(root) {
+    animation: app-slide-in-right 260ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+html[data-nav="back"]::view-transition-old(root) {
+    animation: app-slide-out-right 260ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+html[data-nav="back"]::view-transition-new(root) {
+    animation: app-slide-in-left 260ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+/* Respect reduced-motion. */
+@media (prefers-reduced-motion: reduce) {
+    .is-pwa::view-transition-old(root),
+    .is-pwa::view-transition-new(root),
+    html[data-nav="back"]::view-transition-old(root),
+    html[data-nav="back"]::view-transition-new(root) {
+        animation: none;
+    }
+}
+
+/* ────────────────────────────────────────────────────────────
+ * 7. Press feedback
+ *    app.js delegates touchstart to add .pressing for 100ms — fires before
+ *    the navigation/click handler so the user gets immediate tactile feedback.
+ * ──────────────────────────────────────────────────────────── */
+.is-pwa .btn,
+.is-pwa .cake-card,
+.is-pwa .menu-tile,
+.is-pwa .app-tab {
+    transition: transform 100ms ease, opacity 100ms ease;
+}
+
+.is-pwa .btn.pressing,
+.is-pwa .menu-tile.pressing,
+.is-pwa .app-tab.pressing {
+    transform: scale(0.96);
+    opacity: 0.85;
+}
+
+.is-pwa .cake-card.pressing {
+    transform: scale(0.98);
+}
+
+/* Kill webby hover effects on touch devices — they "stick" after tap. */
+@media (hover: none) {
+    .is-pwa .btn:hover,
+    .is-pwa .cake-card:hover,
+    .is-pwa .menu-tile:hover,
+    .is-pwa .btn-primary:hover {
+        background: inherit;
+        border-color: inherit;
+        transform: none;
+        box-shadow: inherit;
+    }
+}
+
+/* ────────────────────────────────────────────────────────────
+ * 8. Bottom-sheet modals
+ *    Cake details + custom-cake inquiry both slide up from the bottom
+ *    instead of appearing as centered web-style modals.
+ * ──────────────────────────────────────────────────────────── */
+.is-pwa .modal.open {
+    display: flex;
+    align-items: flex-end;
+    justify-content: stretch;
+}
+
+.is-pwa .modal-backdrop {
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+}
+
+.is-pwa .modal-content {
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    max-height: 88vh;
+    margin: 0;
+    border-radius: 20px 20px 0 0;
+    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.18);
+    animation: app-sheet-up 280ms cubic-bezier(0.22, 0.61, 0.36, 1);
+    overflow-y: auto;
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+@keyframes app-sheet-up {
+    from { transform: translateY(100%); }
+    to   { transform: translateY(0); }
+}
+
+/* Drag handle bar at the top of every sheet.
+   ::before pseudo-element so we don't need to touch the modal HTML. */
+.is-pwa .modal-content::before {
+    content: '';
+    position: sticky;
+    top: 0;
+    display: block;
+    width: 40px;
+    height: 4px;
+    margin: 8px auto 0;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.18);
+    z-index: 2;
+}
+
+/* The close button is redundant when you can swipe down — keep it but shrink it. */
+.is-pwa .modal-close {
+    top: 12px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    font-size: 1.4rem;
+    background: rgba(0, 0, 0, 0.05);
+}
+
+/* Sheet-style image: full bleed at the top, no rounding. */
+.is-pwa .modal-content img {
+    border-radius: 0;
+    max-height: 280px;
+    object-fit: cover;
+}
+
+/* Sticky action button at the bottom of the sheet, above safe-area. */
+.is-pwa .modal-footer {
+    position: sticky;
+    bottom: 0;
+    padding: 1rem;
+    margin: 0 -1.75rem -1.75rem;
+    background: linear-gradient(to top, var(--surface) 65%, rgba(255, 255, 255, 0));
+}
+
+.is-pwa .modal-footer .btn {
+    flex: 1;
+    text-align: center;
+    padding: 0.95rem 1.4rem;
+    border-radius: 12px;
+    font-size: 1rem;
+}
+
+/* Class set by app.js while user is dragging the sheet down. */
+.is-pwa .modal-content.dragging {
+    transition: none;
+}
+
+.is-pwa .modal-content.dismissing {
+    animation: app-sheet-down 220ms cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+@keyframes app-sheet-down {
+    to { transform: translateY(100%); }
+}
+
+/* ────────────────────────────────────────────────────────────
+ * 9. Order wizard polish
+ * ──────────────────────────────────────────────────────────── */
+
+/* Inputs at 16px minimum so iOS doesn't auto-zoom on focus. */
+.is-pwa input[type="text"],
+.is-pwa input[type="tel"],
+.is-pwa input[type="email"],
+.is-pwa input[type="date"],
+.is-pwa input[type="number"],
+.is-pwa input[type="file"],
+.is-pwa textarea,
+.is-pwa select {
+    font-size: 16px;
+    border-radius: 10px;
+}
+
+/* Order wizard buttons stretch to full width on app, like native primary CTAs. */
+.is-pwa .order-form .form-actions {
+    position: sticky;
+    bottom: 0;
+    margin: 0 -1rem -1rem;
+    padding: 0.85rem 1rem calc(0.85rem + env(safe-area-inset-bottom));
+    background: linear-gradient(to top, var(--bg) 70%, rgba(250, 246, 241, 0));
+    z-index: 10;
+}
+
+.is-pwa .order-form .form-actions .btn {
+    flex: 1;
+    border-radius: 12px;
+    padding: 0.95rem;
+}
+
+/* ────────────────────────────────────────────────────────────
+ * 10. WhatsApp FAB — sits above the floating tab bar
+ *     (bottom offset is set in section 5 alongside the tab bar geometry)
+ * ──────────────────────────────────────────────────────────── */
+.is-pwa .whatsapp-fab {
+    right: 14px;
+    padding: 0.7rem;
+    border-radius: 999px;
+}
+
+.is-pwa .whatsapp-label {
+    display: none;
+}
+
+/* ────────────────────────────────────────────────────────────
+ * 11. Per-section hides — drop website content from app mode
+ *     one section at a time, keeping the web untouched.
+ * ──────────────────────────────────────────────────────────── */
+.is-pwa .why-us,
+.is-pwa .how-it-works {
+    display: none;
+}

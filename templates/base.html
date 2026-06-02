@@ -19,8 +19,28 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+    // Detect standalone (installed PWA / TWA / iOS home-screen) BEFORE first paint
+    // so app.css overrides are applied in the same render pass — no flash of web styles.
+    (function() {
+        var isStandalone =
+            window.matchMedia('(display-mode: standalone)').matches ||
+            window.matchMedia('(display-mode: fullscreen)').matches ||
+            window.matchMedia('(display-mode: minimal-ui)').matches ||
+            window.navigator.standalone === true ||
+            document.referrer.indexOf('android-app://') === 0;
+        if (isStandalone) {
+            document.documentElement.classList.add('is-pwa');
+            var link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = "{{ url_for('static', filename='css/app.css') }}";
+            document.head.appendChild(link);
+        }
+    })();
+    </script>
 </head>
-<body>
+<body data-route="{{ active_route }}">
     <header class="site-header">
         <a href="{{ url_for('home') }}" class="brand">
             <img src="{{ url_for('static', filename='images/logo.jpeg') }}" alt="{{ bakery_name }} logo" class="brand-logo">
@@ -66,22 +86,39 @@
     </a>
     {% endblock %}
 
+    {# Bottom tab bar — rendered on every page but hidden on web; app.css makes it visible under .is-pwa. #}
+    {% block tab_bar %}
+    <nav class="app-tabbar" aria-label="App navigation">
+        <a href="{{ url_for('home') }}" data-tab="home" class="app-tab {% if active_route == 'home' %}active{% endif %}">
+            <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path fill="currentColor" d="M12 3 2 12h3v8h5v-6h4v6h5v-8h3z"/></svg>
+            <span>Home</span>
+        </a>
+        <a href="{{ url_for('menu') }}" data-tab="menu" class="app-tab {% if active_route == 'menu' %}active{% endif %}">
+            <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path fill="currentColor" d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
+            <span>Menu</span>
+        </a>
+        <a href="{{ url_for('gallery') }}" data-tab="gallery" class="app-tab {% if active_route == 'gallery' %}active{% endif %}">
+            <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path fill="currentColor" d="M21 19V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2zM8.5 13.5l2.5 3 3.5-4.5L19 18H5z"/></svg>
+            <span>Gallery</span>
+        </a>
+        <a href="{{ url_for('order') }}" data-tab="order" class="app-tab {% if active_route == 'order' %}active{% endif %}">
+            <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path fill="currentColor" d="M7 4h-2l-3 9v9a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-1h12v1a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-9l-3-9h-2zM6.5 16a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm11 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zM5 11l1.5-5h11L19 11z"/></svg>
+            <span>Order</span>
+        </a>
+    </nav>
+    {% endblock %}
+
     <script>
     // PWA: register the service worker so Android/Chrome treat the site as installable.
-    // Single-line registration that static analyzers (PWABuilder, Lighthouse) recognize reliably.
     if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/service-worker.js'); }
 
-    // Detect if the site is running as the installed PWA / TWA / iOS home-screen app
-    // and tag <html> with `is-pwa` so CSS can hide install-only UI.
-    (function() {
-        var isStandalone =
-            window.matchMedia('(display-mode: standalone)').matches ||
-            window.matchMedia('(display-mode: fullscreen)').matches ||
-            window.matchMedia('(display-mode: minimal-ui)').matches ||
-            window.navigator.standalone === true ||
-            document.referrer.indexOf('android-app://') === 0;
-        if (isStandalone) document.documentElement.classList.add('is-pwa');
-    })();
+    // Load app.js only when running as installed app (head-script set .is-pwa already).
+    if (document.documentElement.classList.contains('is-pwa')) {
+        var s = document.createElement('script');
+        s.src = "{{ url_for('static', filename='js/app.js') }}";
+        s.defer = true;
+        document.head.appendChild(s);
+    }
     </script>
     <script>
     // Scroll-reveal: fade + slide-up sections as they enter the viewport.

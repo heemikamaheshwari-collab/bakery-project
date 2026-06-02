@@ -249,7 +249,11 @@ def requires_auth(f):
 
 @app.context_processor
 def inject_globals():
-    return {"baker_whatsapp": BAKER_WHATSAPP, "bakery_name": BAKERY_NAME}
+    return {
+        "baker_whatsapp": BAKER_WHATSAPP,
+        "bakery_name": BAKERY_NAME,
+        "active_route": request.endpoint or "",
+    }
 
 
 @app.template_filter("whatsapp_inquiry")
