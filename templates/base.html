@@ -37,25 +37,16 @@
         if (isStandalone) {
             document.documentElement.classList.add('is-pwa');
 
-            // FOUC fix: hide the body until app.css finishes loading, so the
-            // user never sees the website layout flash between page navigations.
-            // The hider style is removed on link onload/onerror (and a 1.5s
-            // safety timer in case the load never fires).
-            var hider = document.createElement('style');
-            hider.id = '__app_fouc_hider';
-            hider.textContent = '.is-pwa body{visibility:hidden!important}';
-            document.head.appendChild(hider);
-
+            // app.css is added to <head> as a render-blocking <link>, which
+            // means the browser waits for it to load before the first paint —
+            // so no FOUC. Previously a visibility:hidden style was used on
+            // top of this, but that broke view transitions: the snapshot of
+            // the new page was captured while invisible, making the
+            // transition animate from old-page to BLANK before the body
+            // revealed. Letting the link block paint is enough.
             var link = document.createElement('link');
             link.rel = 'stylesheet';
             link.href = "{{ url_for('static', filename='css/app.css') }}";
-            var reveal = function() {
-                var h = document.getElementById('__app_fouc_hider');
-                if (h) h.remove();
-            };
-            link.onload = reveal;
-            link.onerror = reveal;
-            setTimeout(reveal, 1500);
             document.head.appendChild(link);
         }
     })();

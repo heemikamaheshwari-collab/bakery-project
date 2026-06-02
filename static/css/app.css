@@ -217,39 +217,39 @@
     navigation: auto;
 }
 
-@keyframes app-slide-out-left {
-    to { transform: translateX(-30%); opacity: 0.6; }
-}
-@keyframes app-slide-in-right {
-    from { transform: translateX(100%); }
-}
-@keyframes app-slide-out-right {
-    to { transform: translateX(100%); }
-}
-@keyframes app-slide-in-left {
-    from { transform: translateX(-30%); opacity: 0.6; }
+/* Pin the bottom tab bar and the maroon header so they DON'T animate during
+   page navigations — the user sees them stay rock-still while only the
+   content between them cross-fades. view-transition-name extracts the
+   element from the root snapshot, then we override its default animation
+   to nothing so it appears stationary. */
+.is-pwa .app-tabbar {
+    view-transition-name: app-tabbar;
 }
 
-.is-pwa::view-transition-old(root) {
-    animation: app-slide-out-left 260ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
-}
-.is-pwa::view-transition-new(root) {
-    animation: app-slide-in-right 260ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+.is-pwa .site-header {
+    view-transition-name: app-header;
 }
 
-html[data-nav="back"]::view-transition-old(root) {
-    animation: app-slide-out-right 260ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
-}
-html[data-nav="back"]::view-transition-new(root) {
-    animation: app-slide-in-left 260ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+::view-transition-old(app-tabbar),
+::view-transition-new(app-tabbar),
+::view-transition-old(app-header),
+::view-transition-new(app-header) {
+    animation: none !important;
 }
 
-/* Respect reduced-motion. */
+/* Content between the header and the tab bar uses the browser's default
+   cross-fade, tuned a bit faster so navigation feels snappy and there's
+   no perceptible "blank" moment. The default cross-fade keeps both pages
+   visible during the transition. */
+::view-transition-old(root),
+::view-transition-new(root) {
+    animation-duration: 200ms;
+    animation-timing-function: ease-out;
+}
+
 @media (prefers-reduced-motion: reduce) {
-    .is-pwa::view-transition-old(root),
-    .is-pwa::view-transition-new(root),
-    html[data-nav="back"]::view-transition-old(root),
-    html[data-nav="back"]::view-transition-new(root) {
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
         animation: none;
     }
 }
@@ -1149,6 +1149,163 @@ html[data-nav="back"]::view-transition-new(root) {
     background: var(--soft);
     color: var(--muted);
     cursor: not-allowed;
+}
+
+/* ────────────────────────────────────────────────────────────
+ * 20. Aggressive overrides — force website chrome to lose
+ *     The website's .cat-pill, .btn-primary, .wizard-step legend have
+ *     uppercase / dark backgrounds / serif fonts that bleed into the app.
+ *     These !important rules force brand colors + sans-serif in app mode.
+ * ──────────────────────────────────────────────────────────── */
+
+/* Category pills — horizontal scroll, no wrap, no uppercase, smaller pills.
+   Top padding includes a generous clear-space below the maroon header
+   (which itself includes safe-area-inset-top). Without this, the first
+   pill visually touches the header bottom edge on notched phones. */
+.is-pwa .category-bar {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    justify-content: flex-start !important;
+    padding: 1.5rem 0.85rem 0.6rem !important;
+    margin: 0.5rem 0 0 !important;
+    max-width: 100% !important;
+    background: transparent !important;
+    position: static !important;
+    overflow-x: auto !important;
+}
+
+.is-pwa .cat-pill {
+    flex: 0 0 auto !important;
+    padding: 0.42rem 0.9rem !important;
+    font-size: 0.76rem !important;
+    text-transform: none !important;
+    letter-spacing: 0.02em !important;
+    border-radius: 999px !important;
+    border: 1px solid var(--border) !important;
+    background: var(--surface) !important;
+    color: var(--ink) !important;
+    font-weight: 500 !important;
+    white-space: nowrap !important;
+}
+
+.is-pwa .cat-pill.active {
+    background: var(--accent) !important;
+    color: #fff !important;
+    border-color: var(--accent) !important;
+}
+
+/* Primary / secondary buttons — maroon, not black; no marketing-uppercase. */
+.is-pwa .btn-primary {
+    background: var(--accent) !important;
+    border-color: var(--accent) !important;
+    color: #fff !important;
+    text-transform: none !important;
+    letter-spacing: 0.02em !important;
+    font-weight: 600 !important;
+}
+.is-pwa .btn-primary:hover {
+    background: var(--accent-dark) !important;
+    border-color: var(--accent-dark) !important;
+}
+
+.is-pwa .btn-secondary {
+    background: var(--surface) !important;
+    border-color: var(--border) !important;
+    color: var(--ink) !important;
+    text-transform: none !important;
+    letter-spacing: 0.02em !important;
+    font-weight: 600 !important;
+}
+
+/* Small buttons (cake card "Order" etc.) — same maroon treatment, compact. */
+.is-pwa .btn-small {
+    text-transform: none !important;
+    letter-spacing: 0.01em !important;
+    font-weight: 600 !important;
+}
+
+/* Wizard step heading — sans-serif, not Playfair. */
+.is-pwa .wizard-step legend {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", system-ui, sans-serif !important;
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    color: var(--ink) !important;
+    margin: 0 0 0.5rem !important;
+    letter-spacing: -0.01em !important;
+    padding: 0 !important;
+}
+
+/* Wizard nav — empty <span> placeholder gets hidden so the lone Next button
+   doesn't get squished into a half-width pill on the right side. */
+.is-pwa .wizard-nav {
+    display: flex !important;
+    gap: 0.6rem !important;
+    margin: 0.5rem 0 0 !important;
+}
+
+.is-pwa .wizard-nav span:empty {
+    display: none !important;
+}
+
+.is-pwa .wizard-nav button,
+.is-pwa .wizard-nav .btn {
+    flex: 1 !important;
+    width: 100% !important;
+    padding: 0.85rem 1rem !important;
+    font-size: 0.95rem !important;
+    border-radius: 12px !important;
+}
+
+/* Order-section width — fill the screen, not centered with web's 720px cap.
+   Symmetric horizontal padding so content sits dead-centered, no left/right drift. */
+.is-pwa .order-section {
+    max-width: 100% !important;
+    padding: 0 1rem 1rem !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+}
+
+.is-pwa .order-form,
+.is-pwa .order-form .wizard-step {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+}
+
+/* <legend> in some browsers has padding-inline:2px which pulls it off-grid.
+   Reset it so the title aligns with the inputs/buttons below. */
+.is-pwa .wizard-step legend {
+    padding-inline: 0 !important;
+    margin-inline: 0 !important;
+    width: 100%;
+    text-align: left;
+}
+
+/* Force every direct child of a wizard step to span the full row width. */
+.is-pwa .wizard-step.active > * {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    box-sizing: border-box !important;
+}
+
+/* Required-field asterisk — inline, not on its own line. */
+.is-pwa .req {
+    display: inline !important;
+    color: var(--accent) !important;
+    font-weight: 700 !important;
+    margin-left: 0.15em;
+}
+
+/* Labels: text and the input below should share the same left edge. */
+.is-pwa .order-form label {
+    text-align: left !important;
+    padding-left: 0 !important;
+    margin-left: 0 !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
 }
 
 /* Search bar only appears on home. Hide on every other route. */
