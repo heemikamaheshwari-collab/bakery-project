@@ -616,6 +616,541 @@ html[data-nav="back"]::view-transition-new(root) {
     font-weight: 600;
 }
 
+/* ────────────────────────────────────────────────────────────
+ * 17. Menu + Gallery pages — category bar & grids
+ *     Category pills are NOT sticky (was colliding with the maroon header
+ *     because the hard-coded 48px offset didn't account for the header's
+ *     actual rendered height including safe-area-inset-top). They now scroll
+ *     with content like normal.
+ * ──────────────────────────────────────────────────────────── */
+.is-pwa .category-bar {
+    display: flex;
+    gap: 0.45rem;
+    overflow-x: auto;
+    padding: 0.9rem 0.85rem 0.6rem;
+    margin: 0;
+    background: transparent;
+    position: static;
+    z-index: auto;
+    justify-content: flex-start;
+    scrollbar-width: none;
+    border: none;
+    max-width: 100%;
+}
+.is-pwa .category-bar::-webkit-scrollbar { display: none; }
+
+.is-pwa .cat-pill {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    padding: 0.42rem 0.85rem;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--ink);
+    font-size: 0.82rem;
+    font-weight: 500;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background 100ms ease, transform 100ms ease;
+}
+
+.is-pwa .cat-pill.active {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+}
+
+.is-pwa .cat-pill:active,
+.is-pwa .cat-pill.pressing {
+    transform: scale(0.94);
+}
+
+/* Menu page 2-col cake grid. */
+.is-pwa .cake-grid,
+.is-pwa .cake-grid.wide {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.7rem;
+    padding: 0.3rem 0.85rem 1.2rem;
+    max-width: 100%;
+    margin: 0;
+}
+
+/* Cake card density (image, name, price, no description on grid view). */
+.is-pwa .cake-card {
+    border-radius: 14px;
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+}
+
+.is-pwa .cake-card:hover {
+    transform: none;
+    box-shadow: var(--shadow-sm);
+}
+
+.is-pwa .cake-card .cake-image-wrap,
+.is-pwa .cake-card .cake-image {
+    aspect-ratio: 1 / 1;
+    border-radius: 14px 14px 0 0;
+}
+
+.is-pwa .cake-body {
+    padding: 0.6rem 0.7rem 0.75rem;
+}
+
+.is-pwa .cake-body h3 {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", system-ui, sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin: 0 0 0.15rem;
+    line-height: 1.25;
+}
+
+.is-pwa .cake-card .cake-body p { display: none; }
+.is-pwa .cake-cat-tag { display: none; }
+
+.is-pwa .cake-footer {
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0;
+    margin-top: 0.3rem;
+}
+
+.is-pwa .cake-footer .price {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--ink);
+}
+
+.is-pwa .cake-footer .price-from { display: none; }
+
+.is-pwa .cake-footer .btn,
+.is-pwa .cake-footer .btn-small {
+    padding: 0.3rem 0.7rem;
+    font-size: 0.74rem;
+    border-radius: 8px;
+}
+
+/* Gallery — 3-col image grid, no card chrome. */
+.is-pwa .photo-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+    padding: 4px 4px 1rem;
+    max-width: 100%;
+}
+
+.is-pwa .photo-tile {
+    aspect-ratio: 1 / 1;
+    border-radius: 8px;
+    overflow: hidden;
+    border: none;
+    padding: 0;
+    background: var(--soft);
+    transition: transform 120ms ease;
+}
+
+.is-pwa .photo-tile img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.is-pwa .photo-tile-name { display: none; }
+
+.is-pwa .photo-tile:active,
+.is-pwa .photo-tile.pressing {
+    transform: scale(0.95);
+}
+
+/* ────────────────────────────────────────────────────────────
+ * 18. Order page (/order) — wizard restyle for mobile
+ * ──────────────────────────────────────────────────────────── */
+
+/* Re-show the page-header on /order — kept hidden globally but useful here. */
+.is-pwa body[data-route="order"] .page-header {
+    display: block !important;
+    text-align: center;
+    padding: 1rem 1rem 0.5rem;
+    max-width: 100%;
+    margin: 0;
+}
+
+.is-pwa body[data-route="order"] .page-header h1 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.5rem;
+    color: var(--accent);
+    margin: 0 0 0.25rem;
+    line-height: 1.2;
+}
+
+.is-pwa body[data-route="order"] .page-header p {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin: 0;
+    line-height: 1.4;
+}
+
+.is-pwa .order-section {
+    padding: 0 0.85rem 1rem;
+    max-width: 100%;
+    margin: 0;
+}
+
+.is-pwa .alert {
+    margin: 0.5rem 0 0.75rem;
+    padding: 0.7rem 0.9rem;
+    border-radius: 10px;
+    font-size: 0.88rem;
+}
+
+/* Step bar — 1/2 progress indicator at top of wizard. */
+.is-pwa .step-bar {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.4rem 0 0.85rem;
+    margin: 0;
+    list-style: none;
+}
+
+.is-pwa .step-dot {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.55rem 0.7rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    color: var(--muted);
+    font-size: 0.78rem;
+    font-weight: 500;
+    transition: all 200ms ease;
+}
+
+.is-pwa .step-dot.active {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+    color: var(--accent-dark);
+}
+
+.is-pwa .step-dot span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    background: var(--bg);
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 0.72rem;
+    color: var(--muted);
+}
+
+.is-pwa .step-dot.active span {
+    background: var(--accent);
+    color: #fff;
+}
+
+/* Wizard step + legend — preserve existing display:none/flex behavior. */
+.is-pwa .wizard-step {
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+.is-pwa .wizard-step.active {
+    gap: 0.85rem;
+}
+
+.is-pwa .wizard-step legend {
+    font-family: -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--ink);
+    padding: 0;
+    margin: 0 0 0.25rem;
+    letter-spacing: -0.01em;
+}
+
+/* Cart list */
+.is-pwa .cart-list {
+    margin: 0;
+    gap: 0.5rem;
+}
+
+.is-pwa .cart-empty {
+    text-align: center;
+    padding: 1.25rem 1rem;
+    color: var(--muted);
+    background: var(--accent-soft);
+    border-radius: 14px;
+    margin: 0;
+    font-size: 0.88rem;
+}
+
+.is-pwa .cart-item {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.7rem 0.85rem;
+    background: var(--surface);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+}
+
+.is-pwa .cart-item-main {
+    flex: 1;
+    min-width: 0;
+}
+
+.is-pwa .cart-item h4 {
+    margin: 0 0 0.15rem;
+    font-size: 0.92rem;
+    font-family: -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+    font-weight: 600;
+    line-height: 1.25;
+}
+
+.is-pwa .cart-item-meta {
+    font-size: 0.78rem;
+    color: var(--muted);
+    line-height: 1.4;
+}
+
+.is-pwa .cart-item-note {
+    margin-top: 0.25rem;
+    font-size: 0.74rem;
+    color: var(--muted);
+    font-style: italic;
+}
+
+.is-pwa .qty-stepper {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.is-pwa .qty-btn {
+    width: 26px;
+    height: 26px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    border-radius: 999px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    color: var(--ink);
+    flex-shrink: 0;
+}
+
+.is-pwa .qty-val {
+    min-width: 18px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.88rem;
+}
+
+.is-pwa .cart-remove {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 1.25rem;
+    padding: 0 0.3rem;
+    cursor: pointer;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+/* Add item details panel */
+.is-pwa .add-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    margin: 0;
+    overflow: hidden;
+}
+
+.is-pwa .add-item > summary {
+    padding: 0.85rem 1rem;
+    font-weight: 600;
+    color: var(--accent);
+    cursor: pointer;
+    list-style: none;
+    font-size: 0.92rem;
+}
+
+.is-pwa .add-item > summary::-webkit-details-marker { display: none; }
+.is-pwa .add-item[open] > summary { border-bottom: 1px solid var(--border); }
+
+.is-pwa .add-item-body {
+    padding: 0.85rem 0.95rem 1rem;
+    gap: 0.75rem;
+}
+
+/* Form fields — labels + inputs in app mode. */
+.is-pwa .order-form label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--ink);
+    margin: 0;
+}
+
+.is-pwa .order-form input[type="text"],
+.is-pwa .order-form input[type="tel"],
+.is-pwa .order-form input[type="email"],
+.is-pwa .order-form input[type="date"],
+.is-pwa .order-form input[type="number"],
+.is-pwa .order-form select,
+.is-pwa .order-form textarea {
+    width: 100%;
+    margin-top: 0.3rem;
+    padding: 0.7rem 0.85rem;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 16px;
+    background: var(--bg);
+    color: var(--ink);
+    box-sizing: border-box;
+}
+
+.is-pwa .order-form input:focus,
+.is-pwa .order-form select:focus,
+.is-pwa .order-form textarea:focus {
+    border-color: var(--accent);
+    outline: none;
+    background: var(--surface);
+}
+
+.is-pwa .order-form textarea {
+    resize: vertical;
+    min-height: 70px;
+}
+
+.is-pwa .order-form .form-row {
+    display: flex;
+    gap: 0.6rem;
+    align-items: flex-end;
+}
+
+.is-pwa .order-form .form-row > label {
+    flex: 1;
+    min-width: 0;
+}
+
+/* Phone input (code + number side-by-side) */
+.is-pwa .phone-input {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.3rem;
+}
+
+.is-pwa .phone-input .phone-code {
+    flex: 0 0 90px;
+    margin-top: 0;
+    padding: 0.7rem 0.5rem;
+    font-size: 14px;
+}
+
+.is-pwa .phone-input input[type="tel"] {
+    flex: 1;
+    margin-top: 0;
+}
+
+.is-pwa .form-hint {
+    display: block;
+    font-size: 0.74rem;
+    color: var(--muted);
+    margin-top: 0.3rem;
+    line-height: 1.4;
+}
+
+.is-pwa .form-note {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.78rem;
+    margin: 0.75rem 0;
+    line-height: 1.4;
+}
+
+.is-pwa .req {
+    color: var(--accent);
+    font-weight: 700;
+}
+
+/* Add-to-order primary button (inside add-item panel) */
+.is-pwa #add-item-btn {
+    width: 100%;
+    padding: 0.85rem;
+    border-radius: 10px;
+    font-weight: 600;
+    margin-top: 0.25rem;
+}
+
+/* Wizard nav buttons — fill width, side by side, comfortable tap targets. */
+.is-pwa .wizard-nav {
+    display: flex;
+    gap: 0.6rem;
+    padding-top: 0.5rem;
+    margin-top: auto;
+}
+
+.is-pwa .wizard-nav > * {
+    flex: 1;
+}
+
+.is-pwa .wizard-nav button {
+    width: 100%;
+    padding: 0.85rem;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+/* When the nav has only the Next button (step 1), let it stretch full-width. */
+.is-pwa .wizard-nav span:empty + button {
+    flex: 1;
+}
+
+/* ────────────────────────────────────────────────────────────
+ * 19. Finishing touches
+ * ──────────────────────────────────────────────────────────── */
+
+/* Smoother focus rings on touch — no thick blue outline. */
+.is-pwa *:focus {
+    outline: none;
+}
+.is-pwa *:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+/* Selection color — branded maroon instead of default browser blue. */
+.is-pwa ::selection {
+    background: var(--accent-soft);
+    color: var(--accent-dark);
+}
+
+/* Better spacing rhythm — every main > section gets consistent breathing room. */
+.is-pwa main {
+    padding-top: 0;
+}
+
+/* Inputs disabled state */
+.is-pwa input:disabled,
+.is-pwa select:disabled,
+.is-pwa textarea:disabled {
+    background: var(--soft);
+    color: var(--muted);
+    cursor: not-allowed;
+}
+
 /* Search bar only appears on home. Hide on every other route. */
 .is-pwa body[data-route="menu"] .app-search,
 .is-pwa body[data-route="gallery"] .app-search,
