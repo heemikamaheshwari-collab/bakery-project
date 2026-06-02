@@ -392,8 +392,8 @@
         var dotEls = Array.prototype.slice.call(dots.children);
 
         var current = 0;
-        var AUTOPLAY_MS = 4500;
-        var RESUME_MS = 8000;
+        var AUTOPLAY_MS = 3000;     // was 4500 — quicker rotation
+        var RESUME_MS = 6000;
         var timer = null;
         var resumeTimer = null;
         var paused = false;

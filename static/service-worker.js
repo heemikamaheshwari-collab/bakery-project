@@ -8,7 +8,7 @@
  *
  * Bump CACHE_VERSION any time you change static assets to bust the cache.
  */
-const CACHE_VERSION = "shrutiscakes-v6";
+const CACHE_VERSION = "shrutiscakes-v7";
 const APP_SHELL = [
     "/",
     "/menu",

@@ -20,6 +20,19 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
+    {# STATIC app.css link with a display-mode media query.
+       In standalone/fullscreen/minimal-ui mode (real PWA/TWA), the media
+       query matches at first paint, so the browser BLOCKS rendering until
+       app.css is loaded — zero FOUC. In regular browser mode the media
+       doesn't match, so the stylesheet is downloaded with low priority and
+       its rules don't apply (the website renders untouched).
+       The JS block below ALSO adds .is-pwa to <html> + injects this link
+       again for the sessionStorage testing flag — duplicate link is fine,
+       the browser dedupes by URL. #}
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/app.css') }}"
+          media="all and (display-mode: standalone), all and (display-mode: fullscreen), all and (display-mode: minimal-ui)">
+
     <script>
     // Detect standalone (installed PWA / TWA / iOS home-screen) BEFORE first paint
     // so app.css overrides are applied in the same render pass — no flash of web styles.
